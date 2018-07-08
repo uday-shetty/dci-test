@@ -2,44 +2,264 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01-preview/deploymentTemplate.json",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "vmSku": {
-      "type": "string",
-      "defaultValue": "Standard_DS2",
+    "dciName": {
       "metadata": {
-        "description": "Size of jumpbox VM."
+        "description": "Simple name for the Docker EE infrastructure"
+      },
+      "type": "string"
+    },
+    "azureClientID": {
+      "metadata": {
+        "description": "ServicePrincipal Client ID"
+      },
+      "type": "string"
+    },
+    "azureClientSecret": {
+      "metadata": {
+        "description": "ServicePrincipal Client Secret"
+      },
+      "type": "securestring"
+    },
+    "linuxOffer": {
+      "defaultValue": "UbuntuServer",
+      "allowedValues": [
+        "UbuntuServer",
+        "RHEL",
+        "CentOS"
+      ],
+      "type": "string",
+      "metadata": {
+        "description": "Specify Linux Offer for the Infrastructure.  Examples: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cli-ps-findimage"
       }
     },
-    "ubuntuOSVersion": {
-      "type": "string",
-      "defaultValue": "16.04-LTS",
-      "metadata": {
-        "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
-      }
-    },
-    "instanceCount": {
-      "type": "int",
-      "defaultValue": 1,
-      "minValue": 1,
-      "maxValue": 1
-    },
-    "adminUsername": {
+    "linuxSku": {
+      "allowedValues": [
+        "16.04-LTS",
+        "7.5",
+        "7.4"
+      ],
       "type": "string",
       "metadata": {
-        "description": "Admin username."
+        "description": "Specify OS version for the Infrastructure [16.04-LTS (Ubuntu), 7.4 (RHEL), 7.5 (RHEL), .....], Examples: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cli-ps-findimage"
       }
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
-        "description": "Admin password."
+        "description": "Admin password for jumpbox."
       }
     },
+    "dockerUCPVersion": {
+      "defaultValue": "3.0.2",
+      "type": "string",
+      "metadata": {
+        "description": "Docker UCP Version"
+      }
+    },
+    "dockerDTRVersion": {
+      "defaultValue": "5.3.0",
+      "type": "string",
+      "metadata": {
+        "description": "Docker Trusted Registry Version"
+      }
+    },
+    "dockerEngineVersion": {
+      "defaultValue": "17.06",
+      "type": "string",
+      "metadata": {
+        "description": "Docker Engine Version"
+      }
+    },
+    "dockerEESubscription": {
+      "defaultValue": "",
+      "type": "string",
+      "metadata": {
+        "description": "Docker EE Subscription URL(obtained from https://store.docker.com)"
+      }
+    },
+    "dockerEELicense": {
+      "metadata": {
+        "description": "Upload your Docker Enterprise Edition License Key"
+      },
+      "type": "SecureString"
+    },
+    "sshPublicKey": {
+      "type": "string",
+      "metadata": {
+        "description": "Linux SSH public key"
+      }
+    },
+    "managerCount": {
+      "defaultValue": 1,
+      "type": "int",
+      "minValue": 1,
+      "metadata": {
+        "description": "Number of manager nodes"
+      }
+    },
+    "managervmSize": {
+      "allowedValues": [
+        "Standard_A0",
+        "Standard_A1",
+        "Standard_A2",
+        "Standard_A3",
+        "Standard_A4",
+        "Standard_A5",
+        "Standard_A6",
+        "Standard_A7",
+        "Standard_D1",
+        "Standard_D2",
+        "Standard_D3",
+        "Standard_D4",
+        "Standard_D11",
+        "Standard_D12",
+        "Standard_D13",
+        "Standard_D14",
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2",
+        "Standard_D11_v2",
+        "Standard_D12_v2",
+        "Standard_D13_v2",
+        "Standard_D14_v2"
+      ],
+      "defaultValue": "Standard_D3_v2",
+      "type": "string",
+      "metadata": {
+        "description": "Size of the Manager VM"
+      }
+    },
+    "linuxworkerCount": {
+       "defaultValue": 1,
+       "type": "int",
+       "minValue": 1,
+       "metadata": {
+         "description": "Number of Linux Worker nodes"
+       }
+    },
+    "linuxworkervmSize": {
+      "allowedValues": [
+        "Standard_A0",
+        "Standard_A1",
+        "Standard_A2",
+        "Standard_A3",
+        "Standard_A4",
+        "Standard_A5",
+        "Standard_A6",
+        "Standard_A7",
+        "Standard_D1",
+        "Standard_D2",
+        "Standard_D3",
+        "Standard_D4",
+        "Standard_D11",
+        "Standard_D12",
+        "Standard_D13",
+        "Standard_D14",
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2",
+        "Standard_D11_v2",
+        "Standard_D12_v2",
+        "Standard_D13_v2",
+        "Standard_D14_v2"
+       ],
+       "defaultValue": "Standard_D2_v2",
+       "type": "string",
+       "metadata": {
+         "description": "Size of the Linux Worker VM"
+       }
+    },
+    "winworkerCount": {
+      "defaultValue": 1,
+      "type": "int",
+      "minValue": 1,
+      "metadata": {
+        "description": "Number of Windows Worker nodes"
+      }
+    },
+    "winworkervmSize": {
+      "allowedValues": [
+        "Standard_A0",
+        "Standard_A1",
+        "Standard_A2",
+        "Standard_A3",
+        "Standard_A4",
+        "Standard_A5",
+        "Standard_A6",
+        "Standard_A7",
+        "Standard_D1",
+        "Standard_D2",
+        "Standard_D3",
+        "Standard_D4",
+        "Standard_D11",
+        "Standard_D12",
+        "Standard_D13",
+        "Standard_D14",
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2",
+        "Standard_D11_v2",
+        "Standard_D12_v2",
+        "Standard_D13_v2",
+        "Standard_D14_v2"
+      ],
+      "defaultValue": "Standard_D2_v2",
+      "type": "string",
+      "metadata": {
+        "description": "Size of the Windows Worker VM"
+      }
+    },
+    "resourceLocation": {
+      "allowedValues": [
+        "eastasia",
+        "southeastasia",
+        "centralus",
+        "eastus",
+        "eastus2",
+        "westus",
+        "northcentralus",
+        "southcentralus",
+        "northeurope",
+        "westeurope",
+        "japanwest",
+        "japaneast",
+        "brazilsouth",
+        "australiaeast",
+        "australiasoutheast",
+        "southindia",
+        "centralindia",
+        "westindia",
+        "canadacentral",
+        "canadaeast",
+        "uksouth",
+        "ukwest",
+        "westcentralus",
+        "westus2",
+        "koreacentral",
+        "koreasouth",
+        "usgovarizona",
+        "usgovtexas",
+        "usgovvirginia",
+        "usgoviowa"
+      ],
+      "metadata": {
+        "description": "Location of the resources"
+      },
+      "type": "string"
+    },
     "artifactBaseUri": {
-            "defaultValue": "https://raw.githubusercontent.com/uday-shetty/dci-test/master/",
-            "type": "string"
+      "defaultValue": "https://raw.githubusercontent.com/uday-shetty/dci-test/master/",
+      "type": "string"
     }
   },
   "variables": {
+    "DockerProviderTag": "8CF0E79C-DF97-4992-9B59-602DB544D354",
     "namingInfix": "dciee2",
     "longNamingInfix": "[toLower('dcijumpbox')]",
     "jumpBoxName": "[concat(variables('namingInfix'), 'jbox')]",
@@ -48,6 +268,7 @@
     "jumpBoxVHDContainerName": "[concat(variables('jumpBoxName'), 'vhd')]",
     "jumpBoxIPConfigName": "[concat(variables('jumpBoxName'), 'ipconfig')]",
     "jumpBoxNicName": "[concat(variables('jumpBoxName'), 'nic')]",
+    "vmSku": "Standard_DS2",
     "storageAccountType": "Standard_LRS",
     "newStorageAccountSuffix": "[concat(variables('namingInfix'), 'sa')]",
     "uniqueStringArray": [
@@ -66,12 +287,30 @@
     "addressPrefix": "10.0.0.0/16",
     "subnetPrefix": "10.0.0.0/24",
     "publicIPAddressID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]",
-    "osType": {
+    "azureRegion": "[resourceGroup().location]",
+    "azureSubscriptionID": "[subscription().subscriptionId]",
+    "azureTenantID": "[subscription().tenantId]",
+    "adminUsername": "docker",
+    "osType": "[variables(concat('osType',parameters('linuxOffer')))]",        
+    "osTypeUbuntuServer": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
-      "sku": "[parameters('ubuntuOSVersion')]",
+      "sku": "[parameters('linuxSku')]",
+      "version": "latest"    
+    }, 
+    "osTypeRHEL": {
+      "publisher": "RedHat",
+      "offer": "RHEL",
+      "sku": "[parameters('linuxSku')]",
       "version": "latest"
-    },
+
+    }, 
+    "osTypeCentOS": {
+      "publisher": "OpenLogic",
+      "offer": "CentOS",
+      "sku": "[parameters('linuxSku')]",
+      "version": "latest"
+    }, 
     "imageReference": "[variables('osType')]",
     "computeApiVersion": "2017-03-30",
     "networkApiVersion": "2017-04-01"
@@ -113,10 +352,7 @@
       "location": "[resourceGroup().location]",
       "apiVersion": "[variables('networkApiVersion')]",
       "properties": {
-        "publicIPAllocationMethod": "Static",
-        "dnsSettings": {
-          "domainNameLabel": "[variables('longNamingInfix')]"
-        }
+        "publicIPAllocationMethod": "Static"
       }
     },
     {
@@ -156,11 +392,11 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('vmSku')]"
+          "vmSize": "[variables('vmSku')]"
         },
         "osProfile": {
           "computerName": "[variables('jumpBoxName')]",
-          "adminUsername": "[parameters('adminUsername')]",
+          "adminUsername": "[variables('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
@@ -204,9 +440,11 @@
         "autoUpgradeMinorVersion": "true",
         "settings": {
           "fileUris": [
-             "[concat(parameters('artifactBaseUri'), 'dci-script.sh')]"
+             "[concat(parameters('artifactBaseUri'), 'dci-azure.sh')]"
           ],
-          "commandToExecute": "sh dci-script.sh"
+          "protectedSettings": {
+			 "commandToExecute": "[concat('bash dci-azure.sh ', variables('azureClientID'), ' ', variables('azureClientSecret'), ' ', variables('azureSubscriptionID'), variables('azureTenantID'), ' ', variables('dciAzureRegion'), ' ', parameters('sshPublicKey'), ' ', parameters('DockerEESubscription'), ' ', parameters('dockerVersion'), ' ', parameters('ucpVersion'), ' ', parameters('dtrVersion'), ' ', parameters('dockerLicense'), ' ', parameters('managerCount'), ' ', parameters('managervmSize'), ' ', parameters('linuxworkerCount'), ' ', parameters('linuxworkervmSize'), ' ', parameters('winworkerCount'), ' ', parameters('winworkervmSize'), ' ', parameters('linuxOffer'), ' ', parameters('dciName'))]"
+          }
         }
       }
     }
