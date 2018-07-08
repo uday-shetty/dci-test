@@ -2,6 +2,49 @@
 dciStack="azure"
 dciContainerTag="stack-$dciStack-master-cc99641"
 
+sudo apt-get update
+sudo apt-get install -y software-properties-common
+
+#install unzip
+sudo apt-get install -y unzip
+
+#install terraform
+wget https://releases.hashicorp.com/terraform/0.11.5/terraform_0.11.5_linux_amd64.zip
+unzip terraform_0.11.5_linux_amd64.zip
+sudo mv terraform /usr/local/bin/
+terraform --version
+
+#install ansible
+sudo apt-get upgrade
+sudo apt-get install -y software-properties-common
+sudo apt-add-repository ppa:ansible/ansible
+sudo apt-get update
+sudo apt-get install -y ansible
+ansible --version
+
+#install docker-ee
+install-dockeree() {
+apt-get update
+apt-get install -y --no-install-recommends \
+    linux-image-extra-$(uname -r) \
+    linux-image-extra-virtual \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+curl -fsSL $DockerEESubscription/ubuntu/gpg | apt-key add -
+add-apt-repository \
+   "deb [arch=amd64] $DockerEESubscription/ubuntu \
+   $(lsb_release -cs) \
+   stable-$dcidockeree"
+apt-get update
+apt-get install -y docker-ee
+
+service docker restart
+sleep 10
+}
+
+
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
     echo "Hello, we just need to setup a handful of variables to get started\n"
@@ -64,6 +107,9 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     dciName=${19}
     echo "dciName: $dciName"
+
+    #Install Docker Engine
+    install-dockeree
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
