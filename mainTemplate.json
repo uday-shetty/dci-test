@@ -134,7 +134,7 @@
     "linuxworkerCount": {
        "defaultValue": 1,
        "type": "int",
-       "minValue": 1,
+       "minValue": 0,
        "metadata": {
          "description": "Number of Linux Worker nodes"
        }
@@ -176,7 +176,7 @@
     "winworkerCount": {
       "defaultValue": 1,
       "type": "int",
-      "minValue": 1,
+      "minValue": 0,
       "metadata": {
         "description": "Number of Windows Worker nodes"
       }
@@ -427,7 +427,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('jumpBoxName'), '/dci_script')]",
+      "name": "[concat(variables('jumpBoxName'), '/extension')]",
       "apiVersion": "2017-03-30",
       "location": "[resourceGroup().location]",
       "dependsOn": [
@@ -441,10 +441,10 @@
         "settings": {
           "fileUris": [
              "[concat(parameters('artifactBaseUri'), 'dci-azure.sh')]"
-          ],
-          "protectedSettings": {
-			 "commandToExecute": "[concat('bash dci-azure.sh ', variables('azureClientID'), ' ', variables('azureClientSecret'), ' ', variables('azureSubscriptionID'), variables('azureTenantID'), ' ', variables('dciAzureRegion'), ' ', parameters('sshPublicKey'), ' ', parameters('DockerEESubscription'), ' ', parameters('dockerVersion'), ' ', parameters('ucpVersion'), ' ', parameters('dtrVersion'), ' ', parameters('dockerLicense'), ' ', parameters('managerCount'), ' ', parameters('managervmSize'), ' ', parameters('linuxworkerCount'), ' ', parameters('linuxworkervmSize'), ' ', parameters('winworkerCount'), ' ', parameters('winworkervmSize'), ' ', parameters('linuxOffer'), ' ', parameters('dciName'))]"
-          }
+          ]
+        },
+        "protectedSettings": {
+	  "commandToExecute": "[concat('bash dci-azure.sh ', parameters('azureClientID'), ' ', parameters('azureClientSecret'), ' ', variables('azureSubscriptionID'), ' ',  variables('azureTenantID'), ' ', variables('azureRegion'), ' ', parameters('dockerEESubscription'), ' ', parameters('dockerEngineVersion'), ' ', parameters('dockerUCPVersion'), ' ', parameters('dockerDTRVersion'), ' ', parameters('dockerEELicense'), ' ', parameters('managerCount'), ' ', parameters('managervmSize'), ' ', parameters('linuxworkerCount'), ' ', parameters('linuxworkervmSize'), ' ', parameters('winworkerCount'), ' ', parameters('winworkervmSize'), ' ', parameters('linuxOffer'), ' ', parameters('dciName'), ' ', parameters('sshPublicKey'))]"
         }
       }
     }

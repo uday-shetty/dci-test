@@ -67,7 +67,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "AzureRegion: $dciAzureRegion"
 
     dciDockerEESubscription=$6
-    echo "dciDockerEESubscription: $DockerEESubscription"
+    echo "DockerEESubscription: $dciDockerEESubscription"
 
     dcidockeree=$7
     echo "dcidockeree: $dcidockeree"
@@ -116,6 +116,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     if [ "$linuxOffer" == "UbuntuServer" ]; then
        linuxOffer="Ubuntu"
+       echo "linuxOffer: $linuxOffer"
     fi
 
     touch ".SETUP_COMPLETED"
