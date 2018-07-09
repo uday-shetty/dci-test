@@ -66,47 +66,47 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciAzureRegion=$5
     echo "AzureRegion: $dciAzureRegion"
 
-    dciSSHPublicKey=$6
-    echo "SSHPublicKey: $dciSSHPublicKey"
-
-    dciDockerEESubscription=$7
+    dciDockerEESubscription=$6
     echo "dciDockerEESubscription: $DockerEESubscription"
 
-    dcidockeree=$8
+    dcidockeree=$7
     echo "dcidockeree: $dcidockeree"
  
-    ucpversion=$9
+    ucpversion=$8
     echo "DCI UCP Version: $ucpversion"
 
-    dtrversion=${10}
+    dtrversion=$9
     echo "DCI DTR Version: $dtrversion"
 
-    dockerlicense=${11}
+    dockerlicense=${10}
     echo "entered Docker License"
 
-    managerCount=${12}
+    managerCount=${11}
     echo "Manager Count: $managerCount"
 
-    managerVMSize=${13}
+    managerVMSize=${12}
     echo "Manager VM Size: $managerVMSize"
 
-    linuxworkerCount=${14}
+    linuxworkerCount=${13}
     echo "Linux Worker Count: $linuxworkerCount"
 
-    linuxwrkVMSize=${15}
+    linuxwrkVMSize=${14}
     echo "Linux Worker VM Size: $linuxwrkVMSize"
 
-    winwrkCount=${16}
+    winwrkCount=${15}
     echo "Windows Worker Count: $winwrkCount"
 
-    winwrkVMSize=${17}
+    winwrkVMSize=${16}
     echo "Windows Worker VM Size: $winwrkVMSize"
 
-    linuxOffer=${18}
+    linuxOffer=${17}
     echo "linuxOffer: $linuxOffer"
 
-    dciName=${19}
+    dciName=${18}
     echo "dciName: $dciName"
+
+    dciSSHPublicKey=${19}
+    echo "SSHPublicKey: $dciSSHPublicKey"
 
     #Install Docker Engine
     install-dockeree
