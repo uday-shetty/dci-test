@@ -79,7 +79,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "DCI DTR Version: $dtrversion"
 
     dockerlicense=${10}
-    echo "entered Docker License"
+    echo "Docker License: $dockerlicense"
 
     managerCount=${11}
     echo "Manager Count: $managerCount"
