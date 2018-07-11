@@ -26,8 +26,6 @@ ansible --version
 install-dockeree() {
 apt-get update
 apt-get install -y --no-install-recommends \
-    linux-image-extra-$(uname -r) \
-    linux-image-extra-virtual \
     apt-transport-https \
     ca-certificates \
     curl \
@@ -80,6 +78,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     dockerlicense=${10}
     echo "Docker License: $dockerlicense"
+    docker_subscription.lic=$dockerlicense
 
     managerCount=${11}
     echo "Manager Count: $managerCount"
@@ -109,7 +108,22 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "SSHPublicKey: $dciSSHPublicKey"
 
     #Install Docker Engine
-    install-dockeree
+    apt-get update
+    apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+    curl -fsSL $DockerEESubscription/ubuntu/gpg | apt-key add -
+    add-apt-repository \
+   "deb [arch=amd64] $DockerEESubscription/ubuntu \
+   $(lsb_release -cs) \
+   stable-$dcidockeree"
+    apt-get update
+    apt-get install -y docker-ee
+
+    service docker restart
+    sleep 10
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
@@ -143,7 +157,7 @@ linux_ucp_worker_count     = "$linuxwrkCount"
 linux_dtr_count            = "$managerCount"
 windows_ucp_worker_count   = "$winwrkCount"
 ansible_inventory          = "inventory/1.hosts"
-ucp_license_path           = "./$docker_subscription.lic"
+ucp_license_path           = "./docker_subscription.lic"
 ucp_admin_password         = ""
 client_id                  = "$dciAzureClientID"
 client_secret              = "$dciAzureClientSecret"
