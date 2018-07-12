@@ -2,6 +2,7 @@
 dciStack="azure"
 dciContainerTag="stack-$dciStack-master-cc99641"
 
+#install docker
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends \
     apt-transport-https \
@@ -42,27 +43,6 @@ apt-get --yes install ansible
 #sudo apt-get install -y ansible
 ansible --version
 
-#install docker-ee
-install-dockeree() {
-apt-get update
-apt-get install -y --no-install-recommends \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
-curl -fsSL $DockerEESubscription/ubuntu/gpg | apt-key add -
-add-apt-repository \
-   "deb [arch=amd64] $DockerEESubscription/ubuntu \
-   $(lsb_release -cs) \
-   stable-$dcidockeree"
-apt-get update
-apt-get install -y docker-ee
-
-service docker restart
-sleep 10
-}
-
-
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
     echo "Hello, we just need to setup a handful of variables to get started\n"
@@ -97,9 +77,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "DCI DTR Version: $dtrversion"
 
     dockerlicense=${10}
-    touch docker_subscription.lic
-    $dockerlicense >> docker_subscription.lic
-    echo "Docker License: $docker_subscription.lic"
+    destfile=docker_subscription.lic
+    echo "dockerlicense" > "$destfile"
 
     managerCount=${11}
     echo "Manager Count: $managerCount"
@@ -125,10 +104,12 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciName=${18}
     echo "dciName: $dciName"
 
-    SSHPublicKey=${19}
+    dciadminpass=${19}
+    
+    SSHPublicKey=${20}
+    mkdir -p .ssh
     dciSSHPublicKey=./ssh/id_rsa.pub
     echo -n  "$SSHPublicKey" | base64 -d >> $dciSSHPublicKey 
-    echo "SSHPublicKey: $dciSSHPublicKey"
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
@@ -163,7 +144,7 @@ linux_dtr_count            = "$managerCount"
 windows_ucp_worker_count   = "$winwrkCount"
 ansible_inventory          = "inventory/1.hosts"
 ucp_license_path           = "./docker_subscription.lic"
-ucp_admin_password         = ""
+ucp_admin_password         = "$dciadminpass"
 client_id                  = "$dciAzureClientID"
 client_secret              = "$dciAzureClientSecret"
 subscription_id            = "$dciAzureSubscriptionID"
