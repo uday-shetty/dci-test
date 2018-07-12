@@ -83,8 +83,9 @@
       },
       "type": "SecureString"
     },
-    "sshPublicKey": {
+    "sshPubKey": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "Linux SSH public key"
       }
@@ -444,7 +445,7 @@
           ]
         },
         "protectedSettings": {
-	  "commandToExecute": "[concat('bash dci-azure.sh ', parameters('azureClientID'), ' ', parameters('azureClientSecret'), ' ', variables('azureSubscriptionID'), ' ',  variables('azureTenantID'), ' ', variables('azureRegion'), ' ', parameters('dockerEESubscription'), ' ', parameters('dockerEngineVersion'), ' ', parameters('dockerUCPVersion'), ' ', parameters('dockerDTRVersion'), ' ', parameters('dockerEELicense'), ' ', parameters('managerCount'), ' ', parameters('managervmSize'), ' ', parameters('linuxworkerCount'), ' ', parameters('linuxworkervmSize'), ' ', parameters('winworkerCount'), ' ', parameters('winworkervmSize'), ' ', parameters('linuxOffer'), ' ', parameters('dciName'), ' ', parameters('sshPublicKey'))]"
+	  "commandToExecute": "[concat('bash dci-azure.sh ', parameters('azureClientID'), ' ', parameters('azureClientSecret'), ' ', variables('azureSubscriptionID'), ' ',  variables('azureTenantID'), ' ', variables('azureRegion'), ' ', parameters('dockerEESubscription'), ' ', parameters('dockerEngineVersion'), ' ', parameters('dockerUCPVersion'), ' ', parameters('dockerDTRVersion'), ' ', parameters('dockerEELicense'), ' ', parameters('managerCount'), ' ', parameters('managervmSize'), ' ', parameters('linuxworkerCount'), ' ', parameters('linuxworkervmSize'), ' ', parameters('winworkerCount'), ' ', parameters('winworkervmSize'), ' ', parameters('linuxOffer'), ' ', parameters('dciName'), ' ', parameters('adminPassword'), ' ', base64(parameters('sshPubKey')))]"
         }
       }
     }
