@@ -3,7 +3,22 @@ dciStack="azure"
 dciContainerTag="stack-$dciStack-master-cc99641"
 
 sudo apt-get update
-sudo apt-get install -y software-properties-common
+sudo apt-get install -y --no-install-recommends \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable"
+sudo apt-get update
+sudo apt-get install -y docker-ce
+
+service docker restart
+
+#sudo apt-get install -y software-properties-common
 
 #install unzip
 sudo apt-get install -y unzip
@@ -15,11 +30,16 @@ sudo mv terraform /usr/local/bin/
 terraform --version
 
 #install ansible
-sudo apt-get upgrade
-sudo apt-get install -y software-properties-common
-sudo apt-add-repository ppa:ansible/ansible
-sudo apt-get update
-sudo apt-get install -y ansible
+apt-get --yes install sofware-properties-common
+apt-add-repository --yes ppa:ansible/ansible 
+apt-get --yes update 
+apt-get --yes install ansible
+
+#sudo apt-get upgrade
+#sudo apt-get install -y software-properties-common
+#sudo apt-add-repository ppa:ansible/ansible
+#sudo apt-get update
+#sudo apt-get install -y ansible
 ansible --version
 
 #install docker-ee
@@ -77,8 +97,9 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "DCI DTR Version: $dtrversion"
 
     dockerlicense=${10}
-    echo "Docker License: $dockerlicense"
-    docker_subscription.lic=$dockerlicense
+    touch docker_subscription.lic
+    $dockerlicense >> docker_subscription.lic
+    echo "Docker License: $docker_subscription.lic"
 
     managerCount=${11}
     echo "Manager Count: $managerCount"
@@ -86,8 +107,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     managerVMSize=${12}
     echo "Manager VM Size: $managerVMSize"
 
-    linuxworkerCount=${13}
-    echo "Linux Worker Count: $linuxworkerCount"
+    linuxwrkCount=${13}
+    echo "Linux Worker Count: $linuxwrkCount"
 
     linuxwrkVMSize=${14}
     echo "Linux Worker VM Size: $linuxwrkVMSize"
@@ -104,26 +125,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciName=${18}
     echo "dciName: $dciName"
 
-    dciSSHPublicKey=${19}
+    SSHPublicKey=${19}
+    dciSSHPublicKey=./ssh/id_rsa.pub
+    echo -n  "$SSHPublicKey" | base64 -d >> $dciSSHPublicKey 
     echo "SSHPublicKey: $dciSSHPublicKey"
-
-    #Install Docker Engine
-    apt-get update
-    apt-get install -y --no-install-recommends \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
-    curl -fsSL $DockerEESubscription/ubuntu/gpg | apt-key add -
-    add-apt-repository \
-   "deb [arch=amd64] $DockerEESubscription/ubuntu \
-   $(lsb_release -cs) \
-   stable-$dcidockeree"
-    apt-get update
-    apt-get install -y docker-ee
-
-    service docker restart
-    sleep 10
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
