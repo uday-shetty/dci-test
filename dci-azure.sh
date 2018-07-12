@@ -78,7 +78,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     dockerlicense=${10}
     destfile=docker_subscription.lic
-    echo "dockerlicense" > "$destfile"
+    echo "$dockerlicense" > "$destfile"
 
     managerCount=${11}
     echo "Manager Count: $managerCount"
@@ -107,9 +107,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciadminpass=${19}
     
     SSHPublicKey=${20}
-    mkdir -p .ssh
-    dciSSHPublicKey=./ssh/id_rsa.pub
-    echo -n  "$SSHPublicKey" | base64 -d >> $dciSSHPublicKey 
+    mkdir -p /dci/$dciStack/
+    destdir=/dci/$dciStack/id_rsa.pub
+    echo -n  "$SSHPublicKey" | base64 -d >> $destdir
+    cat $destdir
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
