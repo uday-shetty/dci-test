@@ -32,7 +32,7 @@
         "description": "Specify Linux Offer for the Infrastructure.  Examples: https://docs.microsoft.com/en-us/azure/virtual-machines/linux/cli-ps-findimage"
       }
     },
-    "linuxSku": {
+    "linuxOSVersion": {
       "allowedValues": [
         "16.04-LTS",
         "7.5",
@@ -292,26 +292,12 @@
     "azureSubscriptionID": "[subscription().subscriptionId]",
     "azureTenantID": "[subscription().tenantId]",
     "adminUsername": "docker",
-    "osType": "[variables(concat('osType',parameters('linuxOffer')))]",        
-    "osTypeUbuntuServer": {
+    "osType": {
       "publisher": "Canonical",
       "offer": "UbuntuServer",
-      "sku": "[parameters('linuxSku')]",
-      "version": "latest"    
-    }, 
-    "osTypeRHEL": {
-      "publisher": "RedHat",
-      "offer": "RHEL",
-      "sku": "[parameters('linuxSku')]",
+      "sku": "16.04-LTS",
       "version": "latest"
-
-    }, 
-    "osTypeCentOS": {
-      "publisher": "OpenLogic",
-      "offer": "CentOS",
-      "sku": "[parameters('linuxSku')]",
-      "version": "latest"
-    }, 
+    },
     "imageReference": "[variables('osType')]",
     "computeApiVersion": "2017-03-30",
     "networkApiVersion": "2017-04-01"
@@ -445,7 +431,7 @@
           ]
         },
         "protectedSettings": {
-	  "commandToExecute": "[concat('bash dci-azure.sh ', parameters('azureClientID'), ' ', parameters('azureClientSecret'), ' ', variables('azureSubscriptionID'), ' ',  variables('azureTenantID'), ' ', variables('azureRegion'), ' ', parameters('dockerEESubscription'), ' ', parameters('dockerEngineVersion'), ' ', parameters('dockerUCPVersion'), ' ', parameters('dockerDTRVersion'), ' ', parameters('dockerEELicense'), ' ', parameters('managerCount'), ' ', parameters('managervmSize'), ' ', parameters('linuxworkerCount'), ' ', parameters('linuxworkervmSize'), ' ', parameters('winworkerCount'), ' ', parameters('winworkervmSize'), ' ', parameters('linuxOffer'), ' ', parameters('dciName'), ' ', parameters('adminPassword'), ' ', base64(parameters('sshPubKey')))]"
+	  "commandToExecute": "[concat('bash dci-azure.sh ', parameters('azureClientID'), ' ', parameters('azureClientSecret'), ' ', variables('azureSubscriptionID'), ' ',  variables('azureTenantID'), ' ', variables('azureRegion'), ' ', parameters('dockerEESubscription'), ' ', parameters('dockerEngineVersion'), ' ', parameters('dockerUCPVersion'), ' ', parameters('dockerDTRVersion'), ' ', parameters('dockerEELicense'), ' ', parameters('managerCount'), ' ', parameters('managervmSize'), ' ', parameters('linuxworkerCount'), ' ', parameters('linuxworkervmSize'), ' ', parameters('winworkerCount'), ' ', parameters('winworkervmSize'), ' ', parameters('linuxOffer'), ' ', parameters('linuxOSVersion'), ' ', parameters('dciName'), ' ', parameters('adminPassword'), ' ', base64(parameters('sshPubKey')))]"
         }
       }
     }
