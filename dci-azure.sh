@@ -101,12 +101,15 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     linuxOffer=${17}
     echo "linuxOffer: $linuxOffer"
 
-    dciName=${18}
+    linuxOSVersion=${18}
+    echo "linuxOSVersion: $linuxOSVersion"
+
+    dciName=${19}
     echo "dciName: $dciName"
 
-    dciadminpass=${19}
+    dciadminpass=${20}
     
-    SSHPublicKey=${20}
+    SSHPublicKey=${21}
     mkdir -p /dci/$dciStack/
     destdir=/dci/$dciStack/id_rsa.pub
     echo -n  "$SSHPublicKey" | base64 -d >> $destdir
