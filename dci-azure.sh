@@ -2,6 +2,9 @@
 dciStack="azure"
 dciContainerTag="stack-$dciStack-master-cc99641"
 
+#install unzip
+sudo apt-get install -y unzip
+
 #install docker
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends \
@@ -19,29 +22,8 @@ sudo apt-get install -y docker-ce
 
 service docker restart
 
-#sudo apt-get install -y software-properties-common
-
-#install unzip
-sudo apt-get install -y unzip
-
-#install terraform
-wget https://releases.hashicorp.com/terraform/0.11.5/terraform_0.11.5_linux_amd64.zip
-unzip terraform_0.11.5_linux_amd64.zip
-sudo mv terraform /usr/local/bin/
-terraform --version
-
-#install ansible
-apt-get --yes install sofware-properties-common
-apt-add-repository --yes ppa:ansible/ansible 
-apt-get --yes update 
-apt-get --yes install ansible
-
-#sudo apt-get upgrade
-#sudo apt-get install -y software-properties-common
-#sudo apt-add-repository ppa:ansible/ansible
-#sudo apt-get update
-#sudo apt-get install -y ansible
-ansible --version
+wget -q https://github.com/docker/certified-infrastructure/blob/develop/azure/ref-arch/certified-infrastructures-azure-install/files/azure-v2.0.0.zip
+unzip ./azure-v2.0.0.zip
 
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
@@ -64,56 +46,64 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciAzureRegion=$5
     echo "AzureRegion: $dciAzureRegion"
 
-    dciDockerEESubscription=$6
+    dciAzureResourceGroup=$6
+    echo "AzureResourceGroup: $dciAzureResourceGroup"
+
+    dciDockerEESubscription=$7
     echo "DockerEESubscription: $dciDockerEESubscription"
 
-    dcidockeree=$7
+    dcidockeree=$8
     echo "dcidockeree: $dcidockeree"
  
-    ucpversion=$8
+    ucpversion=$9
     echo "DCI UCP Version: $ucpversion"
 
-    dtrversion=$9
+    dtrversion=$10
     echo "DCI DTR Version: $dtrversion"
 
-    dockerlicense=${10}
+    dockerlicense=${11}
     destfile=docker_subscription.lic
     echo "$dockerlicense" > "$destfile"
 
-    managerCount=${11}
+    managerCount=${12}
     echo "Manager Count: $managerCount"
 
-    managerVMSize=${12}
+    managerVMSize=${13}
     echo "Manager VM Size: $managerVMSize"
 
-    linuxwrkCount=${13}
+    linuxwrkCount=${14}
     echo "Linux Worker Count: $linuxwrkCount"
 
-    linuxwrkVMSize=${14}
+    linuxwrkVMSize=${15}
     echo "Linux Worker VM Size: $linuxwrkVMSize"
 
-    winwrkCount=${15}
+    dtrCount=${16}
+    echo "Linux Worker Count: $dtrCount"
+
+    dtrVMSize=${17}
+    echo "Linux Worker VM Size: $dtrVMSize"
+
+    winwrkCount=${18}
     echo "Windows Worker Count: $winwrkCount"
 
-    winwrkVMSize=${16}
+    winwrkVMSize=${19}
     echo "Windows Worker VM Size: $winwrkVMSize"
 
-    linuxOffer=${17}
+    linuxOffer=${20}
     echo "linuxOffer: $linuxOffer"
 
-    linuxOSVersion=${18}
+    linuxOSVersion=${21}
     echo "linuxOSVersion: $linuxOSVersion"
 
-    dciName=${19}
+    dciName=${22}
     echo "dciName: $dciName"
 
-    dciadminpass=${20}
+    dciadminpass=${23}
     
-    SSHPublicKey=${21}
+    SSHPrivKey=${24}
     mkdir -p /dci/$dciStack/
     destdir=/dci/$dciStack/id_rsa.pub
-    echo -n  "$SSHPublicKey" | base64 -d >> $destdir
-    cat $destdir
+    echo -n  "$SSHPrivKey" | base64 -d >> $destdir
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
@@ -124,145 +114,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     fi
 
     touch ".SETUP_COMPLETED"
-    touch terraform.tfstate
 
-    #Override the group_vars
-    mkdir -p group_vars/
-    echo "---\ncloudstor_plugin_version: 1.0" > group_vars/all
-
-    #Stage the inventory
-    mkdir -p inventory/
-    touch "inventory/1.hosts"
-    realPathForSSHPrivateKey="`realpath ${dciSSHPrivateKey/#\~/$HOME}`"
-
-    #Let's drop some templates too
-    mkdir -p kube-templates
-
-    cat > terraform.tfvars << EOF
-deployment                 = "$dciName"
-region                     = "$dciAzureRegion"
-ssh_private_key_path       = "/dci/$dciStack/ssh_key"
-linux_ucp_manager_count    = "$managerCount"
-linux_ucp_worker_count     = "$linuxwrkCount"
-linux_dtr_count            = "$managerCount"
-windows_ucp_worker_count   = "$winwrkCount"
-ansible_inventory          = "inventory/1.hosts"
-ucp_license_path           = "./docker_subscription.lic"
-ucp_admin_password         = "$dciadminpass"
-client_id                  = "$dciAzureClientID"
-client_secret              = "$dciAzureClientSecret"
-subscription_id            = "$dciAzureSubscriptionID"
-tenant_id                  = "$dciAzureTenantID"
-linux_user                 = "ubuntu"
-enable_kubernetes_azure_disk = true
-EOF
-
-    cat > inventory/docker-ee << EOF
-[all:vars]
-docker_ee_subscriptions_ubuntu="$dciDockerEESubscription"
-docker_ee_release_channel=stable
-docker_ee_version="$dcidockeree"
-docker_ee_package_version=3:17.06.2~ee~14~3-0~ubuntu
-docker_ee_package_version_win=17.06.2-ee-14
-EOF
-
-    cat > inventory/docker-ucp << EOF
-[all:vars]
-docker_ucp_image_repository=docker
-docker_ucp_version="$ucpversion"
-EOF
-
-    cat > inventory/docker-dtr << EOF
-[all:vars]
-docker_dtr_image_repository=docker
-docker_dtr_version="$dtrversion"
-EOF
-
-    cat > buildStack << EOF
-#!/bin/sh
-docker run -it --rm \\
-    -v "`pwd`/terraform.tfvars":/dci/$dciStack/terraform.tfvars \\
-    -v "`pwd`/terraform.tfstate":/dci/$dciStack/terraform.tfstate \\
-    -v "`pwd`/inventory/docker-ee":/dci/$dciStack/inventory/docker-ee \\
-    -v "`pwd`/inventory/docker-ucp":/dci/$dciStack/inventory/docker-ucp \\
-    -v "`pwd`/inventory/docker-dtr":/dci/$dciStack/inventory/docker-dtr \\
-    -v "`pwd`/inventory/1.hosts":/dci/$dciStack/inventory/1.hosts \\
-    -v "${realPathForSSHPrivateKey}":/dci/$dciStack/ssh_key \\
-    dockereng/certified-infrastructure:$dciContainerTag \\
-    sh -c "terraform init && terraform apply -auto-approve"
-docker run -it --rm \\
-    -v `pwd`/terraform.tfvars:/dci/$dciStack/terraform.tfvars \\
-    -v `pwd`/terraform.tfstate:/dci/$dciStack/terraform.tfstate \\
-    -v `pwd`/inventory/docker-ee:/dci/$dciStack/inventory/docker-ee \\
-    -v `pwd`/inventory/docker-ucp:/dci/$dciStack/inventory/docker-ucp \\
-    -v `pwd`/inventory/docker-dtr:/dci/$dciStack/inventory/docker-dtr \\
-    -v `pwd`/inventory/1.hosts:/dci/$dciStack/inventory/1.hosts \\
-    -v `pwd`/group_vars/all:/dci/$dciStack/group_vars/all \\
-    -v "${realPathForSSHPrivateKey}":/dci/$dciStack/ssh_key \\
-    dockereng/certified-infrastructure:$dciContainerTag \\
-    ansible-playbook --private-key=/dci/$dciStack/ssh_key install.yml
-EOF
-
-    cat > destroyStack << EOF
-#!/bin/sh
-#Assuming we had installed the UCP bundle, we want to run this container locally 
-export DOCKER_TLS_VERIFY=
-export COMPOSE_TLS_VERSION=
-export DOCKER_CERT_PATH=
-export DOCKER_HOST=
-docker run -it --rm \\
-    -v "`pwd`/terraform.tfvars":/dci/$dciStack/terraform.tfvars \\
-    -v "`pwd`/terraform.tfstate":/dci/$dciStack/terraform.tfstate \\
-    -v "`pwd`/inventory/docker-ee":/dci/$dciStack/inventory/docker-ee \\
-    -v "`pwd`/inventory/docker-ucp":/dci/$dciStack/inventory/docker-ucp \\
-    -v "`pwd`/inventory/docker-dtr":/dci/$dciStack/inventory/docker-dtr \\
-    -v "`pwd`/inventory/1.hosts":/dci/$dciStack/inventory/1.hosts \\
-    -v "${realPathForSSHPrivateKey}":/dci/$dciStack/ssh_key \\
-    dockereng/certified-infrastructure:$dciContainerTag \\
-    sh -c "terraform init && terraform destroy -force"
-EOF
-
-    cat > kube-templates/azure-disk-test.yaml << EOF
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: standard
-provisioner: kubernetes.io/azure-disk
-parameters:
-  storageaccounttype: Standard_LRS
-  kind: Managed
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: task-pv-claim
-spec:
-  storageClassName: standard
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-kind: Pod
-apiVersion: v1
-metadata:
-  name: task-pv-pod
-spec:
-  volumes:
-    - name: task-pv-storage
-      persistentVolumeClaim:
-       claimName: task-pv-claim
-  containers:
-    - name: task-pv-container
-      image: nginx
-      ports:
-        - containerPort: 80
-          name: "http-server"
-      volumeMounts:
-        - mountPath: "/usr/share/nginx/html"
-          name: task-pv-storage
-EOF
 else
     echo "Looks like you've already run setup, we've probably already emited these files"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
