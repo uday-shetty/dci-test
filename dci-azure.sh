@@ -22,8 +22,8 @@ sudo apt-get install -y docker-ce
 
 service docker restart
 
-wget -q https://github.com/docker/certified-infrastructure/blob/develop/azure/ref-arch/certified-infrastructures-azure-install/files/azure-v2.0.0.zip
-unzip ./azure-v2.0.0.zip
+#download azure setup
+docker run --rm --name dci -v "$(pwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
 
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
@@ -62,7 +62,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "DCI DTR Version: $dtrversion"
 
     dockerlicense=${11}
-    destfile=docker_subscription.lic
+    destfile=~/docker_subscription.lic
     echo "$dockerlicense" > "$destfile"
 
     managerCount=${12}
@@ -101,8 +101,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciadminpass=${23}
     
     SSHPrivKey=${24}
-    mkdir -p /dci/$dciStack/
-    destdir=/dci/$dciStack/id_rsa.pub
+    destdir=~/.ssh/id_rsa
     echo -n  "$SSHPrivKey" | base64 -d >> $destdir
 
     echo "Great you're all set"
