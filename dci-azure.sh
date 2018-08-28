@@ -1,6 +1,5 @@
 #!/bin/sh
-dciStack="azure"
-dciContainerTag="stack-$dciStack-master-cc99641"
+
 dciwd="/home/docker"
 
 #install unzip
@@ -26,6 +25,7 @@ service docker restart
 #download azure setup
 #docker run --rm --name dci -v "$(pwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
 #docker run --rm --name dci -v "$(dciwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
+curl -fsSL https://download.docker.com/dci/for/azure.sh | sh
 
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
@@ -64,7 +64,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "DCI DTR Version: $dtrversion"
 
     dockerlicense=${11}
-    destfile=$(dciwd)/docker_subscription.lic
+    destfile=$dciwd/docker_subscription.lic
     echo "$dockerlicense" > "$destfile"
 
     managerCount=${12}
@@ -106,7 +106,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     hubPassword=${25}
     
     SSHPrivKey=${26}
-    destdir=$(dciwd)/.ssh/id_rsa
+    destdir=$dciwd/.ssh/id_rsa
     echo -n  "$SSHPrivKey" | base64 -d >> $destdir
 
     echo "Great you're all set"
@@ -114,8 +114,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     touch ".SETUP_COMPLETED"
 
-    docker login -p $hubPassword -u $hubUsername
-    docker run --rm --name dci -v "$(dciwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
+    #docker login -p $hubPassword -u $hubUsername
+    #docker run --rm --name dci -v "$dciwd/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
 
 else
     echo "Looks like you've already run setup, we've probably already emited these files"
