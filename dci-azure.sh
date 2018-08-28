@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dciwd="/home/docker"
+dciwd="/home/docker/dci-for-azure-2.0.0"
 
 #install unzip
 sudo apt-get install -y unzip
@@ -63,8 +63,6 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "DCI DTR Version: $dtrversion"
 
     dockerlicense=${11}
-    destfile=$dciwd/docker_subscription.lic
-    echo "$dockerlicense" > "$destfile"
 
     managerCount=${12}
     echo "Manager Count: $managerCount"
@@ -115,7 +113,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     docker login -p $hubPassword -u $hubUsername
     #docker run --rm --name dci -v "$dciwd/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
-    curl -o /home/docker -fsSL https://download.docker.com/dci/for/azure.sh | sh
+    cd /home/docker && curl -fsSL https://download.docker.com/dci/for/azure.sh | sh
+
+    destfile=$dciwd/docker_subscription.lic
+    echo "$dockerlicense" > "$destfile"
 
 else
     echo "Looks like you've already run setup, we've probably already emited these files"
