@@ -25,7 +25,6 @@ service docker restart
 #download azure setup
 #docker run --rm --name dci -v "$(pwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
 #docker run --rm --name dci -v "$(dciwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
-curl -fsSL https://download.docker.com/dci/for/azure.sh | sh
 
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
@@ -114,8 +113,9 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     touch ".SETUP_COMPLETED"
 
-    #docker login -p $hubPassword -u $hubUsername
+    docker login -p $hubPassword -u $hubUsername
     #docker run --rm --name dci -v "$dciwd/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
+    curl -o /home/docker -fsSL https://download.docker.com/dci/for/azure.sh | sh
 
 else
     echo "Looks like you've already run setup, we've probably already emited these files"
