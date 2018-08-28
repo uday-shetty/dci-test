@@ -1,6 +1,7 @@
 #!/bin/sh
 dciStack="azure"
 dciContainerTag="stack-$dciStack-master-cc99641"
+dciwd="/home/docker"
 
 #install unzip
 sudo apt-get install -y unzip
@@ -23,7 +24,8 @@ sudo apt-get install -y docker-ce
 service docker restart
 
 #download azure setup
-docker run --rm --name dci -v "$(pwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
+#docker run --rm --name dci -v "$(pwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
+docker run --rm --name dci -v "$(dciwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
 
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
@@ -62,7 +64,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "DCI DTR Version: $dtrversion"
 
     dockerlicense=${11}
-    destfile=~/docker_subscription.lic
+    destfile=$(dciwd)/docker_subscription.lic
     echo "$dockerlicense" > "$destfile"
 
     managerCount=${12}
@@ -101,16 +103,11 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciadminpass=${23}
     
     SSHPrivKey=${24}
-    destdir=~/.ssh/id_rsa
+    destdir=$(dciwd)/.ssh/id_rsa
     echo -n  "$SSHPrivKey" | base64 -d >> $destdir
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
-
-    if [ "$linuxOffer" == "UbuntuServer" ]; then
-       linuxOffer="Ubuntu"
-       echo "linuxOffer: $linuxOffer"
-    fi
 
     touch ".SETUP_COMPLETED"
 
