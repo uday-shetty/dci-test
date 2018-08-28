@@ -25,7 +25,7 @@ service docker restart
 
 #download azure setup
 #docker run --rm --name dci -v "$(pwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
-docker run --rm --name dci -v "$(dciwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
+#docker run --rm --name dci -v "$(dciwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
 
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
@@ -101,8 +101,11 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "dciName: $dciName"
 
     dciadminpass=${23}
+
+    hubUsername=${24}
+    hubPassword=${25}
     
-    SSHPrivKey=${24}
+    SSHPrivKey=${26}
     destdir=$(dciwd)/.ssh/id_rsa
     echo -n  "$SSHPrivKey" | base64 -d >> $destdir
 
@@ -110,6 +113,9 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
 
     touch ".SETUP_COMPLETED"
+
+    docker login -p $hubPassword -u $hubUsername
+    docker run --rm --name dci -v "$(dciwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
 
 else
     echo "Looks like you've already run setup, we've probably already emited these files"
