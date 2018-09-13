@@ -28,7 +28,6 @@ service docker restart
 
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
-    echo "Hello, we just need to setup a handful of variables to get started\n"
 
     echo "Azure Setup\n"
 
@@ -91,20 +90,12 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     linuxOffer=${20}
     echo "linuxOffer: $linuxOffer"
 
-    linuxOSVersion=${21}
-    echo "linuxOSVersion: $linuxOSVersion"
+    dciadminpass=${21}
 
-    dciName=${22}
-    echo "dciName: $dciName"
-
-    dciadminpass=${23}
-
-    hubUsername=${24}
-    hubPassword=${25}
+    hubUsername=${22}
+    hubPassword=${23}
     
-    SSHPrivKey=${26}
-    destdir=$dciwd/.ssh/id_rsa
-    echo -n  "$SSHPrivKey" | base64 -d >> $destdir
+    SSHPrivKey=${24}
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
@@ -117,6 +108,9 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     destfile=$dciwd/docker_subscription.lic
     echo "$dockerlicense" > "$destfile"
+
+    destdir=$dciwd/.ssh/id_rsa
+    echo -n  "$SSHPrivKey" | base64 -d >> $destdir
 
 else
     echo "Looks like you've already run setup, we've probably already emited these files"
