@@ -1,6 +1,7 @@
 #!/bin/sh
 
 dciwd="/home/docker/dci-for-azure-2.0.0"
+dcihome="/home/docker"
 
 #install unzip
 sudo apt-get install -y unzip
@@ -109,7 +110,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     destfile=$dciwd/docker_subscription.lic
     echo "$dockerlicense" > "$destfile"
 
-    destdir=$dciwd/.ssh/id_rsa
+    destdir=$dcihome/.ssh/id_rsa
     echo -n  "$SSHPrivKey" | base64 -d >> $destdir
 
 else
