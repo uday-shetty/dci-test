@@ -111,7 +111,9 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "$dockerlicense" > "$destfile"
 
     destdir=$dcihome/.ssh/id_rsa
-    echo -n  "$SSHPrivKey" | base64 -d >> $destdir
+    #echo -n  "$SSHPrivKey" | base64 -d -i >> $destdir
+    echo "$SSHPrivKey" > "$destfile"
+    
 
 else
     echo "Looks like you've already run setup, we've probably already emited these files"
