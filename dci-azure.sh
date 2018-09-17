@@ -59,7 +59,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     ucpversion=$9
     echo "DCI UCP Version: $ucpversion"
 
-    dtrversion=$10
+    dtrversion=${10}
     echo "DCI DTR Version: $dtrversion"
 
     dockerlicense=${11}
