@@ -63,6 +63,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "DCI DTR Version: $dtrversion"
 
     dockerlicense=${11}
+    echo "License: $dockerlicense"
 
     managerCount=${12}
     echo "Manager Count: $managerCount"
@@ -97,6 +98,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     hubPassword=${23}
     
     SSHPrivKey=${24}
+    echo "Key: $SSHPrivKey"
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
@@ -112,7 +114,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     destdir=$dcihome/.ssh/id_rsa
     #echo -n  "$SSHPrivKey" | base64 -d -i >> $destdir
-    echo "$SSHPrivKey" > "$destfile"
+    echo "$SSHPrivKey" > "$destdir"
     
 
 else
