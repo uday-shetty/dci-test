@@ -113,8 +113,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "$dockerlicense" > "$destfile"
 
     destdir=$dcihome/.ssh/id_rsa
-    #echo -n  "$SSHPrivKey" | base64 -d -i >> $destdir
-    echo "$SSHPrivKey" > "$destdir"
+    echo -n  "$SSHPrivKey" | base64 -d -i > $destdir
+    #echo "$SSHPrivKey" > "$destdir"
     
 
 else
