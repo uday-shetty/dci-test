@@ -113,6 +113,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "$dockerlicense" > "$destfile"
 
     cp $dciwd/examples/terraform.tfvars.$linuxOffer.example $dciwd/terraform.tfvars
+    cd $dciwd
 
     sed -i -e '/linux_ucp_manager_count /s/ = [0-9]$/= '$count'/' terraform.tfvars
     sed -i -e '/linux_ucp_worker_count /s/ = [0-9]$/= '$count'/' terraform.tfvars
