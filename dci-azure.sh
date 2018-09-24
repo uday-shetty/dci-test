@@ -112,9 +112,9 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     destfile=$dciwd/docker_subscription.lic
     echo "$dockerlicense" > "$destfile"
 
-    if [$linuxOffer == "Ubuntu-16.04"]; then
+    if [$linuxOffer == "UbuntuServer-16.04"]; then
 	cp $dciwd/examples/terraform.tfvars.ubuntu-1604.example $dciwd/terraform.tfvars
-    elif [$linuxOffer == "Ubuntu-18.04"]; then
+    elif [$linuxOffer == "UbuntuServer-18.04"]; then
         echo "No 18.04"
     else
         " no matches"
