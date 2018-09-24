@@ -115,15 +115,15 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     cp $dciwd/examples/terraform.tfvars.$linuxOffer.example $dciwd/terraform.tfvars
     cd $dciwd
 
-    sed -i -e '/linux_ucp_manager_count /s/ = [0-9]$/= '$count'/' terraform.tfvars
-    sed -i -e '/linux_ucp_worker_count /s/ = [0-9]$/= '$count'/' terraform.tfvars
-    sed -i -e '/linux_dtr_count /s/ = [0-9]$/= '$count'/' terraform.tfvars
-    sed -i -e '/windows_ucp_worker_count /s/ = [0-9]$/= '$count'/' terraform.tfvars
+    sed -i -e '/linux_ucp_manager_count /s/ = [0-9]$/= '$managerCount'/' terraform.tfvars
+    sed -i -e '/linux_ucp_worker_count /s/ = [0-9]$/= '$ linuxwrkCount'/' terraform.tfvars
+    sed -i -e '/linux_dtr_count /s/ = [0-9]$/= '$dtrCount'/' terraform.tfvars
+    sed -i -e '/windows_ucp_worker_count /s/ = [0-9]$/= '$winwrkCount'/' terraform.tfvars
 
-    sed -i -e '/client_id /s/ = "[^"][^"]*"/="$dciAzureClientID"/' terraform.tfvars
-    sed -i -e '/client_secret /s/ = "[^"][^"]*"/="$dciAzureClientSecret"/' terraform.tfvars
-    sed -i -e '/subscription_id /s/ = "[^"][^"]*"/="$dciAzureSubscriptionID"/' terraform.tfvars
-    sed -i -e '/tenant_id /s/ = "[^"][^"]*"/="$dciAzureTenantID"/' terraform.tfvars
+    sed -i -e '/client_id /s/ = "[^"][^"]*"/="'$dciAzureClientID'"/' terraform.tfvars
+    sed -i -e '/client_secret /s/ = "[^"][^"]*"/="'$dciAzureClientSecret'"/' terraform.tfvars
+    sed -i -e '/subscription_id /s/ = "[^"][^"]*"/="'$dciAzureSubscriptionID'"/' terraform.tfvars
+    sed -i -e '/tenant_id /s/ = "[^"][^"]*"/="'$dciAzureTenantID'"/' terraform.tfvars
 
 
     #destdir=$dcihome/.ssh/id_rsa
