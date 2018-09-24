@@ -112,13 +112,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     destfile=$dciwd/docker_subscription.lic
     echo "$dockerlicense" > "$destfile"
 
-    if [$linuxOffer == "UbuntuServer-16.04"]; then
-	cp $dciwd/examples/terraform.tfvars.ubuntu-1604.example $dciwd/terraform.tfvars
-    elif [$linuxOffer == "UbuntuServer-18.04"]; then
-        echo "No 18.04"
-    else
-        " no matches"
-    fi
+    cp $dciwd/examples/terraform.tfvars.$linuxOffer.example $dciwd/terraform.tfvars
+
     sed -i -e '/linux_ucp_manager_count /s/ = [0-9]$/= '$count'/' terraform.tfvars
     sed -i -e '/linux_ucp_worker_count /s/ = [0-9]$/= '$count'/' terraform.tfvars
     sed -i -e '/linux_dtr_count /s/ = [0-9]$/= '$count'/' terraform.tfvars
