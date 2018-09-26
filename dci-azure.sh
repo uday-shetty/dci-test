@@ -130,15 +130,15 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     sed -i -e '/tenant_id /s/ = "[^"][^"]*"/="'$dciAzureTenantID'"/' terraform.tfvars
 
     #edit instances.auto.tfvars
-    sed -i -e '/linux_manager_instance_type /s/ = "[^"]*"/= '$managerVMSize'/' instances.auto.tfvars
-    sed -i -e '/linux_worker_instance_type /s/ = "[^"]*"/= '$linuxwrkVMSize'/' instances.auto.tfvars
-    sed -i -e '/windows_worker_instance_type /s/ = "[^"]*"/= '$winwrkVMSize'/' instances.auto.tfvars
-    sed -i -e '/dtr_instance_type /s/ = "[^"]*"/= '$dtrVMSize'/' instances.auto.tfvars
+    sed -i -e '/linux_manager_instance_type /s/ = "[^"]*"/= "'$managerVMSize'"/' instances.auto.tfvars
+    sed -i -e '/linux_worker_instance_type /s/ = "[^"]*"/= "'$linuxwrkVMSize'"/' instances.auto.tfvars
+    sed -i -e '/windows_worker_instance_type /s/ = "[^"]*"/= "'$winwrkVMSize'"/' instances.auto.tfvars
+    sed -i -e '/dtr_instance_type /s/ = "[^"]*"/= "'$dtrVMSize'"/' instances.auto.tfvars
 
     destdir=$dcihome/.ssh/id_rsa
     #echo  ${SSHPrivKey} | base64 --decode > $destdir
-    #echo -n  "$SSHPrivKey" | base64 -d -i > $destdir
-    echo "$SSHPrivKey" > "$destdir"
+    echo -n  "$SSHPrivKey" | base64 -d -i > $destdir
+    #echo "$SSHPrivKey" > "$destdir"
     
     
 
