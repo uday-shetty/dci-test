@@ -97,8 +97,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     hubUsername=${22}
     hubPassword=${23}
     
-    #SSHPrivKey=${24}
-    #echo "Key: $SSHPrivKey"
+    SSHPrivKey=${24}
+    echo "Key: $SSHPrivKey"
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
@@ -115,8 +115,12 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     cp $dciwd/examples/terraform.tfvars.$linuxOffer.example $dciwd/terraform.tfvars
     cd $dciwd
 
+    # edit terraform.tfvars
+    #sed -i -e '/deployment /s/ = "[^"]*"/= '$dcideploymentname'/' terraform.tfvars
+    sed -i -e '/region /s/ = "[^"]*"/= '$dciAzureRegion'/' terraform.tfvars
+
     sed -i -e '/linux_ucp_manager_count /s/ = [0-9]$/= '$managerCount'/' terraform.tfvars
-    sed -i -e '/linux_ucp_worker_count /s/ = [0-9]$/= '$ linuxwrkCount'/' terraform.tfvars
+    sed -i -e '/linux_ucp_worker_count /s/ = [0-9]$/= '$linuxwrkCount'/' terraform.tfvars
     sed -i -e '/linux_dtr_count /s/ = [0-9]$/= '$dtrCount'/' terraform.tfvars
     sed -i -e '/windows_ucp_worker_count /s/ = [0-9]$/= '$winwrkCount'/' terraform.tfvars
 
@@ -125,11 +129,16 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     sed -i -e '/subscription_id /s/ = "[^"][^"]*"/="'$dciAzureSubscriptionID'"/' terraform.tfvars
     sed -i -e '/tenant_id /s/ = "[^"][^"]*"/="'$dciAzureTenantID'"/' terraform.tfvars
 
+    #edit instances.auto.tfvars
+    sed -i -e '/linux_manager_instance_type /s/ = "[^"]*"/= '$managerVMSize'/' instances.auto.tfvars
+    sed -i -e '/linux_worker_instance_type /s/ = "[^"]*"/= '$linuxwrkVMSize'/' instances.auto.tfvars
+    sed -i -e '/windows_worker_instance_type /s/ = "[^"]*"/= '$winwrkVMSize'/' instances.auto.tfvars
+    sed -i -e '/dtr_instance_type /s/ = "[^"]*"/= '$dtrVMSize'/' instances.auto.tfvars
 
-    #destdir=$dcihome/.ssh/id_rsa
+    destdir=$dcihome/.ssh/id_rsa
     #echo  ${SSHPrivKey} | base64 --decode > $destdir
     #echo -n  "$SSHPrivKey" | base64 -d -i > $destdir
-    #echo "$SSHPrivKey" > "$destdir"
+    echo "$SSHPrivKey" > "$destdir"
     
     
 
