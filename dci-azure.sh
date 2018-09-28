@@ -137,8 +137,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     destdir=$dcihome/.ssh/id_rsa
     #echo  ${SSHPrivKey} | base64 --decode > $destdir
-    echo -n  "$SSHPrivKey" | base64 -d -i > $destdir
+    #echo -n  "$SSHPrivKey" | base64 -d -i >> $destdir
+    echo -n  "$SSHPrivKey" | base64 | tr -d '\n' -i >> $destdir
     #echo "$SSHPrivKey" > "$destdir"
+    #cat ~/.ssh/id_rsa | base64 | tr -d '\n' | xclip -selection clipboard
     
     
 
