@@ -5,6 +5,7 @@ dcihome="/home/docker"
 
 #install unzip
 sudo apt-get install -y unzip
+sudo apt-get install -y jq
 
 #install docker
 sudo apt-get update
@@ -50,8 +51,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciAzureResourceGroup=$6
     echo "AzureResourceGroup: $dciAzureResourceGroup"
 
-    dciDockerEESubscription=$7
-    echo "DockerEESubscription: $dciDockerEESubscription"
+    dciDockerEESub=$7
+    echo "DockerEESubscription: $dciDockerEESub"
 
     dcidockeree=$8
     echo "dcidockeree: $dcidockeree"
@@ -135,14 +136,16 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     sed -i -e '/windows_worker_instance_type /s/ = "[^"]*"/= "'$winwrkVMSize'"/' instances.auto.tfvars
     sed -i -e '/dtr_instance_type /s/ = "[^"]*"/= "'$dtrVMSize'"/' instances.auto.tfvars
 
+    # decode SSH private key and store in /home/docker
     destdir=$dcihome/.ssh/id_rsa
-    #echo  ${SSHPrivKey} | base64 --decode > $destdir
     echo -n  "$SSHPrivKey" | base64 -d -i >> $destdir
-    #echo -n  "$SSHPrivKey" | base64 | tr -d '\n' -i >> $destdir
-    #echo "$SSHPrivKey" > "$destdir"
-    #cat ~/.ssh/id_rsa | base64 | tr -d '\n' | xclip -selection clipboard
     
-    
+    #parse EE subscription URL
+    dockerEEsub="$(echo $dciDockerEESub | sed -ne '/sub/,$p')"
+    echo $dockerEEsub
+
+
+    # edit inventory/2.config
 
 else
     echo "Looks like you've already run setup, we've probably already emited these files"
