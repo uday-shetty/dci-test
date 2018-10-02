@@ -141,11 +141,38 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo -n  "$SSHPrivKey" | base64 -d -i >> $destdir
     
     #parse EE subscription URL
-    dockerEEsub="$(echo $dciDockerEESub | sed -ne '/sub/,$p')"
+    dockerEEsub="$(echo $dciDockerEESub | sed -e 's#.*/##')"
     echo $dockerEEsub
 
 
-    # edit inventory/2.config
+
+    # edit Docker EE subscriptions
+
+    dockeree="inventory/2.config"
+
+    if [[ $linuxOffer == *"ubuntu"* ]]; then
+        echo "Ubuntu"
+        sed -i -e '/ docker_ee_subscriptions_ubuntu/s/^# //' $dockeree
+        sed -i -e '/docker_ee_subscriptions_ubuntu/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
+        sed -i -e '/ docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu/s/^# //' $dockeree
+    elif [[ $linuxOffer == *"rhel"* ]]; then
+        echo "RHEL"
+        sed -i -e '/ docker_ee_subscriptions_redhat/s/^# //' $dockeree
+        sed -i -e '/docker_ee_subscriptions_redhat/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
+        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $dockeree
+    elif [[ $linuxOffer == *"centos"* ]]; then
+        sed -i -e '/ docker_ee_subscriptions_centos/s/^# //' $dockeree
+        sed -i -e '/docker_ee_subscriptions_centos/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
+        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $dockeree
+    elif [[ $linuxOffer == *"oraclelinux"* ]]; then
+        sed -i -e '/ docker_ee_subscriptions_oracle/s/^# //' $dockeree
+        sed -i -e '/docker_ee_subscriptions_oracle/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
+        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $dockeree
+    elif [[ $linuxOffer == *"sles"* ]]; then
+        sed -i -e '/ docker_ee_subscriptions_sles/s/^# //' $dockeree
+        sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
+        sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $dockeree
+    fi
 
 else
     echo "Looks like you've already run setup, we've probably already emited these files"
