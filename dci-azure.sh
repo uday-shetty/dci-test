@@ -1,13 +1,13 @@
 #!/bin/sh
 
-dciwd="/home/docker/dci-for-azure-2.0.0"
+dciwd="/home/docker/dci-for-azure-2.0.0-tp1"
 dcihome="/home/docker"
 
 #install unzip
 sudo apt-get install -y unzip
 sudo apt-get install -y jq
 
-#install docker
+#install docker engine
 sudo apt-get update
 sudo apt-get install -y --no-install-recommends \
     apt-transport-https \
@@ -24,12 +24,8 @@ sudo apt-get install -y docker-ce
 
 service docker restart
 
-#download azure setup
-#docker run --rm --name dci -v "$(pwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
-#docker run --rm --name dci -v "$(dciwd)/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
 
 if [ ! -f ".SETUP_COMPLETED" ]; then
-
 
     echo "Azure Setup\n"
 
@@ -54,8 +50,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciDockerEESub=$7
     echo "DockerEESubscription: $dciDockerEESub"
 
-    dcidockeree=$8
-    echo "dcidockeree: $dcidockeree"
+    sshPublicKey=$8
+    echo "SSH Public Key: $sshPublicKey"
  
     ucpversion=$9
     echo "DCI UCP Version: $ucpversion"
@@ -98,8 +94,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     hubUsername=${22}
     hubPassword=${23}
     
-    SSHPrivKey=${24}
-    echo "Key: $SSHPrivKey"
+    sshPrivKey=${24}
+    echo "Key: $sshPrivKey"
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
@@ -110,8 +106,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     #docker run --rm --name dci -v "$dciwd/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
     cd /home/docker && curl -fsSL https://download.docker.com/dci/for/azure.sh | sh
 
-    destfile=$dciwd/docker_subscription.lic
-    echo "$dockerlicense" > "$destfile"
+    lic_dir=$dciwd/docker_subscription.lic
+    echo "$dockerlicense" > "$lic_dir"
 
     cp $dciwd/examples/terraform.tfvars.$linuxOffer.example $dciwd/terraform.tfvars
     cd $dciwd
@@ -136,47 +132,53 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     sed -i -e '/windows_worker_instance_type /s/ = "[^"]*"/= "'$winwrkVMSize'"/' instances.auto.tfvars
     sed -i -e '/dtr_instance_type /s/ = "[^"]*"/= "'$dtrVMSize'"/' instances.auto.tfvars
 
-    # decode SSH private key and store in /home/docker
-    destdir=$dcihome/.ssh/id_rsa
-    echo -n  "$SSHPrivKey" | base64 -d -i >> $destdir
+    # decode SSH private key and store in /home/docker/.ssh
+    ssh_priv_dir=$dcihome/.ssh/id_rsa
+    echo -n  "$sshPrivKey" | base64 -d -i >> $ssh_priv_dir
+
+    # SSH Public Key store in /home/docker/.ssh
+    ssh_pub_dir=$dcihome/.ssh/id_rsa.pub
+    echo "$sshPublicKey" > "$ssh_pub_dir"
     
     #parse EE subscription URL
     dockerEEsub="$(echo $dciDockerEESub | sed -e 's#.*/##')"
     echo $dockerEEsub
 
 
-
     # edit Docker EE subscriptions
-
-    dockeree="inventory/2.config"
+    docker_ee_dir="inventory/2.config"
 
     if [[ $linuxOffer == *"ubuntu"* ]]; then
         echo "Ubuntu"
-        sed -i -e '/ docker_ee_subscriptions_ubuntu/s/^# //' $dockeree
-        sed -i -e '/docker_ee_subscriptions_ubuntu/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
-        sed -i -e '/ docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu/s/^# //' $dockeree
+        sed -i -e '/ docker_ee_subscriptions_ubuntu/s/^# //' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_ubuntu/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/ docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu/s/^# //' $docker_ee_dir
     elif [[ $linuxOffer == *"rhel"* ]]; then
         echo "RHEL"
-        sed -i -e '/ docker_ee_subscriptions_redhat/s/^# //' $dockeree
-        sed -i -e '/docker_ee_subscriptions_redhat/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
-        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $dockeree
+        sed -i -e '/ docker_ee_subscriptions_redhat/s/^# //' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_redhat/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
     elif [[ $linuxOffer == *"centos"* ]]; then
-        sed -i -e '/ docker_ee_subscriptions_centos/s/^# //' $dockeree
-        sed -i -e '/docker_ee_subscriptions_centos/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
-        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $dockeree
+        sed -i -e '/ docker_ee_subscriptions_centos/s/^# //' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_centos/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
     elif [[ $linuxOffer == *"oraclelinux"* ]]; then
-        sed -i -e '/ docker_ee_subscriptions_oracle/s/^# //' $dockeree
-        sed -i -e '/docker_ee_subscriptions_oracle/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
-        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $dockeree
+        sed -i -e '/ docker_ee_subscriptions_oracle/s/^# //' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_oracle/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
     elif [[ $linuxOffer == *"sles"* ]]; then
-        sed -i -e '/ docker_ee_subscriptions_sles/s/^# //' $dockeree
-        sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dciDockerEESub'/' $dockeree
-        sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $dockeree
+        sed -i -e '/ docker_ee_subscriptions_sles/s/^# //' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
     fi
 
+    #DCI_SSH_KEY="$dcihome/.ssh/id_rsa"
+    #DCI_CLOUD="azure"
+
+    ./dci.sh create
 else
-    echo "Looks like you've already run setup, we've probably already emited these files"
-    echo "Remove .SETUP_COMPLETED if you want to re-run setup"
+    echo "updated terraform.tfvars and inventory/2.config files."
+    echo "Remove .SETUP_COMPLETED if you want to updated configuration and re-run setup"
     echo "Exiting!\n"
     exit 0
 fi
