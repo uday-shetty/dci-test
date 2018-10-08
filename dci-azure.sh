@@ -91,8 +91,11 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     dciadminpass=${21}
 
-    hubUsername=${22}
-    hubPassword=${23}
+    dciVersion=${22}
+    echo "DCI Version= $dciVersion"
+
+    dcideploymentName=${23}
+    echo "Deployment Name= $deploymentName"
     
     sshPrivKey=${24}
     echo "Key: $sshPrivKey"
@@ -113,7 +116,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     cd $dciwd
 
     # edit terraform.tfvars
-    #sed -i -e '/deployment /s/ = "[^"]*"/= '$dcideploymentname'/' terraform.tfvars
+    #sed -i -e '/deployment /s/ = "[^"]*"/= '$dcideploymentName'/' terraform.tfvars
     sed -i -e '/region /s/ = "[^"]*"/= '$dciAzureRegion'/' terraform.tfvars
 
     sed -i -e '/linux_ucp_manager_count /s/ = [0-9]$/= '$managerCount'/' terraform.tfvars
