@@ -144,7 +144,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     # SSH Public Key store in /home/docker/.ssh
     ssh_pub_dir=$dcihome/.ssh/id_rsa.pub
-    echo "$sshPublicKey" > "$ssh_pub_dir"
+    echo -n "$sshPublicKey" | base64 -d -i >> "$ssh_pub_dir"
     
     #parse EE subscription URL
     dockerEEsub="$(echo $dciDockerEESub | sed -e 's#.*/##')"
