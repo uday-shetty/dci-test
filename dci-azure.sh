@@ -95,7 +95,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "DCI Version= $dciVersion"
 
     dcideploymentName=${23}
-    echo "Deployment Name= $deploymentName"
+    echo "Deployment Name= $dcideploymentName"
     
     hubUsername=${24}
     hubPassword=${25}
@@ -181,7 +181,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     #DCI_SSH_KEY="$dcihome/.ssh/id_rsa"
     #DCI_CLOUD="azure"
 
-    ./dci.sh create
+    #./dci.sh create
 else
     echo "updated terraform.tfvars and inventory/2.config files."
     echo "Remove .SETUP_COMPLETED if you want to updated configuration and re-run setup"
