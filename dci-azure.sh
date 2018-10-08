@@ -97,7 +97,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dcideploymentName=${23}
     echo "Deployment Name= $deploymentName"
     
-    sshPrivKey=${24}
+    hubUsername=${24}
+    hubPassword=${25}
+
+    sshPrivKey=${26}
     echo "Key: $sshPrivKey"
 
     echo "Great you're all set"
