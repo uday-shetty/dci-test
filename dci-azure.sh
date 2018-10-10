@@ -100,7 +100,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     hubPassword=${25}
 
     windows_admin_password=${26}
-    echo "Windows Admin  Password= $windows_admin_password"
+    echo "Windows Admin Password= $windows_admin_password"
     
     sshPrivKey=${27}
     echo "Key: $sshPrivKey"
