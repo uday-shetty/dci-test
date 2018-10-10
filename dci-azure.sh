@@ -88,7 +88,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     linuxOS=${20}
     echo "linuxOS: $linuxOS"
 
-    ucpadminpasswd=${21}
+    linuxuser=${21}
 
     dciVersion=${22}
     echo "DCI Version= $dciVersion"
@@ -96,13 +96,16 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dcideploymentName=${23}
     echo "Deployment Name= $dcideploymentName"
     
-    hubUsername=${24}
-    hubPassword=${25}
+    ucpadminpasswd=${24}
+    echo "Docker EE= $ucpadminpasswd"
 
-    windows_admin_password=${26}
+    hubUsername=${25}
+    hubPassword=${26}
+
+    windows_admin_password=${27}
     echo "Windows Admin Password= $windows_admin_password"
     
-    sshPrivKey=${27}
+    sshPrivKey=${28}
     echo "Key: $sshPrivKey"
 
     echo "Great you're all set"
@@ -149,7 +152,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     sed -i -e '/dtr_instance_type /s/ = "[^"]*"/= "'$dtrVMSize'"/' instances.auto.tfvars
 
     # enable Kubernetes Option to "true"
-    sed -i -e '/enable_kubernetes_azure_disk /s/ = "[^"]*"/= "true"/' terraform.tfvars
+    sed -i -e '/enable_kubernetes_azure_disk /s/ = false/ = true/' terraform.tfvars
+
+    # set Linux user name
+    sed -i -e '/linux_user /s/ = "[^"]*"/= "'$linuxuser'"/' terraform.tfvars
 
     # set Windows Credendials
     if [[ $winwrkCount -gt 0 ]]; then
