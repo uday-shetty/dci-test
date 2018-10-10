@@ -152,7 +152,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     sed -i -e '/enable_kubernetes_azure_disk /s/ = "[^"]*"/= "true"/' terraform.tfvars
 
     # set Windows Credendials
-    If [[ $winwrkCount -gt 0 ]]; then
+    if [[ $winwrkCount -gt 0 ]]; then
 	echo "Setup credentials for Windows worker nodes"
     	sed -i -e '/windows_user/s/^# //' terraform.tfvars
     	sed -i -e '/windows_admin_password/s/^# //' terraform.tfvars
