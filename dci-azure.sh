@@ -1,7 +1,6 @@
 #!/bin/sh
 
-dciwd="/home/docker/dci-for-azure-2.0.0-tp1"
-dcihome="/home/docker"
+#DCIHOME="/home/docker/dci-for-azure-2.0.0-tp1"
 
 #install unzip
 sudo apt-get install -y unzip
@@ -86,10 +85,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     winwrkVMSize=${19}
     echo "Windows Worker VM Size: $winwrkVMSize"
 
-    linuxOffer=${20}
-    echo "linuxOffer: $linuxOffer"
+    linuxOS=${20}
+    echo "linuxOS: $linuxOS"
 
-    dciadminpass=${21}
+    ucpadminpasswd=${21}
 
     dciVersion=${22}
     echo "DCI Version= $dciVersion"
@@ -100,7 +99,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     hubUsername=${24}
     hubPassword=${25}
 
-    sshPrivKey=${26}
+    windows_admin_password=${26}
+    echo "Windows Admin  Password= $windows_admin_password"
+    
+    sshPrivKey=${27}
     echo "Key: $sshPrivKey"
 
     echo "Great you're all set"
@@ -108,77 +110,95 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 
     touch ".SETUP_COMPLETED"
 
-    docker login -p $hubPassword -u $hubUsername
-    #docker run --rm --name dci -v "$dciwd/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
-    cd /home/docker && curl -fsSL https://download.docker.com/dci/for/azure.sh | sh
+    DCIHOME="/home/docker/dci-for-azure-$dciVersion"
+    HOME="/home/docker"
 
-    lic_dir=$dciwd/docker_subscription.lic
+    #login to Store
+    docker login -p $hubPassword -u $hubUsername
+
+    #docker run --rm --name dci -v "$DCIHOME/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
+    cd $HOME && curl -fsSL https://download.docker.com/dci/for/azure.sh | sh
+
+    lic_dir=$DCIHOME/docker_subscription.lic
     echo "$dockerlicense" > "$lic_dir"
 
-    cp $dciwd/examples/terraform.tfvars.$linuxOffer.example $dciwd/terraform.tfvars
-    cd $dciwd
+    cp $DCIHOME/examples/terraform.tfvars.$linuxOS.example $DCIHOME/terraform.tfvars
+    cd $DCIHOME
 
     # edit terraform.tfvars
-    #sed -i -e '/deployment /s/ = "[^"]*"/= '$dcideploymentName'/' terraform.tfvars
+    sed -i -e '/deployment /s/ = "[^"]*"/= "'$dcideploymentName'"/' terraform.tfvars
+    sed -i -e '/ucp_admin_password /s/ = "[^"]*"/= "'$ucpadminpasswd'"/' terraform.tfvars
     sed -i -e '/region /s/ = "[^"]*"/= '$dciAzureRegion'/' terraform.tfvars
 
+    # update number of cluster nodes
     sed -i -e '/linux_ucp_manager_count /s/ = [0-9]$/= '$managerCount'/' terraform.tfvars
     sed -i -e '/linux_ucp_worker_count /s/ = [0-9]$/= '$linuxwrkCount'/' terraform.tfvars
     sed -i -e '/linux_dtr_count /s/ = [0-9]$/= '$dtrCount'/' terraform.tfvars
     sed -i -e '/windows_ucp_worker_count /s/ = [0-9]$/= '$winwrkCount'/' terraform.tfvars
 
+    # update Azure AD Service Principal info
     sed -i -e '/client_id /s/ = "[^"][^"]*"/="'$dciAzureClientID'"/' terraform.tfvars
     sed -i -e '/client_secret /s/ = "[^"][^"]*"/="'$dciAzureClientSecret'"/' terraform.tfvars
     sed -i -e '/subscription_id /s/ = "[^"][^"]*"/="'$dciAzureSubscriptionID'"/' terraform.tfvars
     sed -i -e '/tenant_id /s/ = "[^"][^"]*"/="'$dciAzureTenantID'"/' terraform.tfvars
 
-    #edit instances.auto.tfvars
+    # edit VM sizes
     sed -i -e '/linux_manager_instance_type /s/ = "[^"]*"/= "'$managerVMSize'"/' instances.auto.tfvars
     sed -i -e '/linux_worker_instance_type /s/ = "[^"]*"/= "'$linuxwrkVMSize'"/' instances.auto.tfvars
     sed -i -e '/windows_worker_instance_type /s/ = "[^"]*"/= "'$winwrkVMSize'"/' instances.auto.tfvars
     sed -i -e '/dtr_instance_type /s/ = "[^"]*"/= "'$dtrVMSize'"/' instances.auto.tfvars
 
+    # enable Kubernetes Option to "true"
+    sed -i -e '/enable_kubernetes_azure_disk /s/ = "[^"]*"/= "true"/' terraform.tfvars
+
+    # set Windows Credendials
+    If [[ $winwrkCount -gt 0 ]]; then
+	echo "Setup credentials for Windows worker nodes"
+    	sed -i -e '/windows_user/s/^# //' terraform.tfvars
+    	sed -i -e '/windows_admin_password/s/^# //' terraform.tfvars
+    	sed -i -e '/windows_admin_password /s/ = "[^"]*"/= "'$windows_admin_password'"/' terraform.tfvars
+    fi
+
     # decode SSH private key and store in /home/docker/.ssh
-    ssh_priv_dir=$dcihome/.ssh/id_rsa
+    ssh_priv_dir=$HOME/.ssh/id_rsa
     echo -n  "$sshPrivKey" | base64 -d -i >> $ssh_priv_dir
 
     # SSH Public Key store in /home/docker/.ssh
-    ssh_pub_dir=$dcihome/.ssh/id_rsa.pub
-    echo -n "$sshPublicKey" | base64 -d -i >> "$ssh_pub_dir"
+    #ssh_pub_dir=$HOME/.ssh/id_rsa.pub
+    #echo -n "$sshPublicKey" | base64 -d -i >> "$ssh_pub_dir"
     
-    #parse EE subscription URL
+    # parse EE subscription URL
     dockerEEsub="$(echo $dciDockerEESub | sed -e 's#.*/##')"
     echo $dockerEEsub
-
 
     # edit Docker EE subscriptions
     docker_ee_dir="inventory/2.config"
 
-    if [[ $linuxOffer == *"ubuntu"* ]]; then
+    if [[ $linuxOS == *"ubuntu"* ]]; then
         echo "Ubuntu"
         sed -i -e '/ docker_ee_subscriptions_ubuntu/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_ubuntu/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_ubuntu/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
         sed -i -e '/ docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu/s/^# //' $docker_ee_dir
-    elif [[ $linuxOffer == *"rhel"* ]]; then
+    elif [[ $linuxOS == *"rhel"* ]]; then
         echo "RHEL"
         sed -i -e '/ docker_ee_subscriptions_redhat/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_redhat/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_redhat/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
         sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
-    elif [[ $linuxOffer == *"centos"* ]]; then
+    elif [[ $linuxOS == *"centos"* ]]; then
         sed -i -e '/ docker_ee_subscriptions_centos/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_centos/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_centos/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
         sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
-    elif [[ $linuxOffer == *"oraclelinux"* ]]; then
+    elif [[ $linuxOS == *"oraclelinux"* ]]; then
         sed -i -e '/ docker_ee_subscriptions_oracle/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_oracle/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_oracle/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
         sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
-    elif [[ $linuxOffer == *"sles"* ]]; then
+    elif [[ $linuxOS == *"sles"* ]]; then
         sed -i -e '/ docker_ee_subscriptions_sles/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dciDockerEESub'/' $docker_ee_dir
+        sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
         sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
     fi
 
-    #DCI_SSH_KEY="$dcihome/.ssh/id_rsa"
+    #DCI_SSH_KEY="$HOME/.ssh/id_rsa"
     #DCI_CLOUD="azure"
 
     #./dci.sh create
