@@ -259,7 +259,8 @@ echo "cloudstor_plugin_version=1.0" >> terraform.tfvars
     # execute DCI script
     export DCI_SSH_KEY="$HOME/.ssh/id_rsa"
     export DCI_CLOUD="azure"
-    ./dci.sh create
+    echo "Executing dci script"
+    $DCIHOME/dci.sh create
 
 else
     echo "updated terraform.tfvars and inventory/2.config files."
