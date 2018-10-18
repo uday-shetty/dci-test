@@ -122,6 +122,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     docker login -p $hubPassword -u $hubUsername
 
     #docker run --rm --name dci -v "$DCIHOME/:/home" "docker/certified-infrastructure:azure-latest" cp -r . /home
+    docker pull docker/certified-infrastructure:azure-$dciVersion
     cd $HOME && curl -fsSL https://download.docker.com/dci/for/azure.sh | sh
 
     lic_dir=$DCIHOME/docker_subscription.lic
@@ -255,10 +256,11 @@ echo "cloudstor_plugin_version=1.0" >> terraform.tfvars
     #    sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
     #fi
 
-    #DCI_SSH_KEY="$HOME/.ssh/id_rsa"
-    #DCI_CLOUD="azure"
+    # execute DCI script
+    DCI_SSH_KEY="$HOME/.ssh/id_rsa"
+    DCI_CLOUD="azure"
+    ./dci.sh create
 
-    #./dci.sh create
 else
     echo "updated terraform.tfvars and inventory/2.config files."
     echo "Remove .SETUP_COMPLETED if you want to updated configuration and re-run setup"
