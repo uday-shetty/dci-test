@@ -187,7 +187,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     #
 # Docker EE Platform variables
 #
-[all:vars]
+#[all:vars]
 echo "docker_ee_release_channel=stable" >> terraform.tfvars
 echo "docker_ee_version=17.06" >> terraform.tfvars
 #<placeholder>  Format= sub-xxx-xxx-xxx-xxx
@@ -257,8 +257,8 @@ echo "cloudstor_plugin_version=1.0" >> terraform.tfvars
     #fi
 
     # execute DCI script
-    DCI_SSH_KEY="$HOME/.ssh/id_rsa"
-    DCI_CLOUD="azure"
+    export DCI_SSH_KEY="$HOME/.ssh/id_rsa"
+    export DCI_CLOUD="azure"
     ./dci.sh create
 
 else
