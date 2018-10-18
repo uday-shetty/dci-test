@@ -1,6 +1,5 @@
 #!/bin/sh
 
-#DCIHOME="/home/docker/dci-for-azure-2.0.0-tp1"
 
 #install unzip
 sudo apt-get install -y unzip
@@ -96,16 +95,19 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dcideploymentName=${23}
     echo "Deployment Name= $dcideploymentName"
     
-    ucpadminpasswd=${24}
+    ucpadminusername=${24}
+    echo "Docker EE= $ucpadminusername"
+
+    ucpadminpasswd=${25}
     echo "Docker EE= $ucpadminpasswd"
 
-    hubUsername=${25}
-    hubPassword=${26}
+    hubUsername=${26}
+    hubPassword=${27}
 
-    windows_admin_password=${27}
+    windows_admin_password=${28}
     echo "Windows Admin Password= $windows_admin_password"
     
-    sshPrivKey=${28}
+    sshPrivKey=${29}
     echo "Key: $sshPrivKey"
 
     echo "Great you're all set"
@@ -131,7 +133,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     # edit terraform.tfvars
     sed -i -e '/deployment /s/ = "[^"]*"/= "'$dcideploymentName'"/' terraform.tfvars
     sed -i -e '/ucp_admin_password /s/ = "[^"]*"/= "'$ucpadminpasswd'"/' terraform.tfvars
-    sed -i -e '/region /s/ = "[^"]*"/= '$dciAzureRegion'/' terraform.tfvars
+    sed -i -e '/region /s/ = "[^"]*"/= "'$dciAzureRegion'"/' terraform.tfvars
 
     # update number of cluster nodes
     sed -i -e '/linux_ucp_manager_count /s/ = [0-9]$/= '$managerCount'/' terraform.tfvars
@@ -140,10 +142,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     sed -i -e '/windows_ucp_worker_count /s/ = [0-9]$/= '$winwrkCount'/' terraform.tfvars
 
     # update Azure AD Service Principal info
-    sed -i -e '/client_id /s/ = "[^"][^"]*"/="'$dciAzureClientID'"/' terraform.tfvars
-    sed -i -e '/client_secret /s/ = "[^"][^"]*"/="'$dciAzureClientSecret'"/' terraform.tfvars
-    sed -i -e '/subscription_id /s/ = "[^"][^"]*"/="'$dciAzureSubscriptionID'"/' terraform.tfvars
-    sed -i -e '/tenant_id /s/ = "[^"][^"]*"/="'$dciAzureTenantID'"/' terraform.tfvars
+    sed -i -e '/client_id /s/ = "[^"][^"]*"/= "'$dciAzureClientID'"/' terraform.tfvars
+    sed -i -e '/client_secret /s/ = "[^"][^"]*"/= "'$dciAzureClientSecret'"/' terraform.tfvars
+    sed -i -e '/subscription_id /s/ = "[^"][^"]*"/= "'$dciAzureSubscriptionID'"/' terraform.tfvars
+    sed -i -e '/tenant_id /s/ = "[^"][^"]*"/= "'$dciAzureTenantID'"/' terraform.tfvars
 
     # edit VM sizes
     sed -i -e '/linux_manager_instance_type /s/ = "[^"]*"/= "'$managerVMSize'"/' instances.auto.tfvars
@@ -178,31 +180,80 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo $dockerEEsub
 
     # edit Docker EE subscriptions
-    docker_ee_dir="inventory/2.config"
+    
+    #docker_ee_dir="inventory/2.config"
 
-    if [[ $linuxOS == *"ubuntu"* ]]; then
-        echo "Ubuntu"
-        sed -i -e '/ docker_ee_subscriptions_ubuntu/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_ubuntu/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-        sed -i -e '/ docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu/s/^# //' $docker_ee_dir
-    elif [[ $linuxOS == *"rhel"* ]]; then
-        echo "RHEL"
-        sed -i -e '/ docker_ee_subscriptions_redhat/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_redhat/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
-    elif [[ $linuxOS == *"centos"* ]]; then
-        sed -i -e '/ docker_ee_subscriptions_centos/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_centos/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
-    elif [[ $linuxOS == *"oraclelinux"* ]]; then
-        sed -i -e '/ docker_ee_subscriptions_oracle/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_oracle/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-        sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
-    elif [[ $linuxOS == *"sles"* ]]; then
-        sed -i -e '/ docker_ee_subscriptions_sles/s/^# //' $docker_ee_dir
-        sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-        sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
-    fi
+    #
+# Docker EE Platform variables
+#
+[all:vars]
+echo "docker_ee_release_channel=stable" > terraform.tfvars
+echo "docker_ee_version=17.06" > terraform.tfvars
+#<placeholder>  Format= sub-xxx-xxx-xxx-xxx
+echo "docker_ee_subscriptions_ubuntu= <placeholder>" > terraform.tfvars
+echo "docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu" > terraform.tfvars
+#
+# docker_ee_subscriptions_centos= <placeholder>
+# docker_ee_package_version= 17.06.2.ee.16-3.el7
+#
+# docker_ee_subscriptions_redhat= <placeholder>
+# docker_ee_package_version= 17.06.2.ee.16-3.el7
+#
+# docker_ee_subscriptions_oracle= <placeholder>
+# docker_ee_package_version= 17.06.2.ee.16-3.el7
+#
+# docker_ee_subscriptions_sles= <placeholder>
+# docker_ee_package_version= 2:17.06.2.ee.16-3
+echo "docker_ee_package_version_win=17.06.2-ee-16" > terraform.tfvars
+echo "docker_ucp_version=3.0.4" > terraform.tfvars
+# docker_ucp_license_path: "{{ playbook_dir }}/docker_subscription.lic"
+# docker_ucp_cert_file= ssl_cert/ucp_cert.pem
+# docker_ucp_ca_file= ssl_cert/ucp_ca.pem
+# docker_ucp_key_file= ssl_cert/ucp_key.pem
+# docker_ucp_admin_password=<placeholder>
+# docker_ucp_admin_username=<placeholder>
+# docker_ucp_lb=<placeholder>
+echo "docker_dtr_version=2.5.3" > terraform.tfvars
+# docker_dtr_cert_file= ssl_cert/dtr_cert.pem
+# docker_dtr_key_file= ssl_cert/dtr_key.pem
+# docker_dtr_ca_file= ssl_cert/dtr_ca.pem
+# docker_dtr_lb= <placeholder>
+# docker_dtr_replica_id= <placeholder> # (A 12-character long hexadecimal number= e.g. 1234567890ab)
+#
+# Docker storage volume.
+#
+# If this is set to a block device then the device will be formatted with the recommended fs for the OS
+# and mounted at /var/lib/docker.
+# docker_storage_volume="/dev/xvdb"
+#
+# Cloudstor
+#
+# Set to "disabled" to prevent the plugin being installed (even if cloudstor_plugin_options is set).
+echo "cloudstor_plugin_version=1.0" > terraform.tfvars
+
+    #if [[ $linuxOS == *"ubuntu"* ]]; then
+    #    echo "Ubuntu"
+    #    sed -i -e '/ docker_ee_subscriptions_ubuntu/s/^# //' $docker_ee_dir
+    #    sed -i -e '/docker_ee_subscriptions_ubuntu/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
+    #    sed -i -e '/ docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu/s/^# //' $docker_ee_dir
+    #elif [[ $linuxOS == *"rhel"* ]]; then
+    #    echo "RHEL"
+    #    sed -i -e '/ docker_ee_subscriptions_redhat/s/^# //' $docker_ee_dir
+    #    sed -i -e '/docker_ee_subscriptions_redhat/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
+    #    sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
+    #elif [[ $linuxOS == *"centos"* ]]; then
+    #    sed -i -e '/ docker_ee_subscriptions_centos/s/^# //' $docker_ee_dir
+    #    sed -i -e '/docker_ee_subscriptions_centos/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
+    #    sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
+    #elif [[ $linuxOS == *"oraclelinux"* ]]; then
+    #    sed -i -e '/ docker_ee_subscriptions_oracle/s/^# //' $docker_ee_dir
+    #    sed -i -e '/docker_ee_subscriptions_oracle/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
+    #    sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
+    #elif [[ $linuxOS == *"sles"* ]]; then
+    #    sed -i -e '/ docker_ee_subscriptions_sles/s/^# //' $docker_ee_dir
+    #    sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
+    #    sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
+    #fi
 
     #DCI_SSH_KEY="$HOME/.ssh/id_rsa"
     #DCI_CLOUD="azure"
