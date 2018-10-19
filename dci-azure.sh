@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# set DCI parameters (Required)
+DCI_SSH_KEY="$HOME/.ssh/id_rsa"
+DCI_CLOUD="azure"
+
+# set DCI parameters (Optional)
+DCI_VERSION=${DCI_VERSION:-2.0.0-tp1}
+DCI_REPOSITORY=${DCI_REPOSITORY-"docker"}
+DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
 
 #install unzip
 sudo apt-get install -y unzip
@@ -22,6 +30,23 @@ sudo apt-get install -y docker-ce
 
 service docker restart
 
+dci_create() {
+    VOLUME_MOUNTED_KEY="$(basename "${DCI_SSH_KEY}")"
+    TERRAFORM_OPTIONS="-var 'ssh_private_key_path=${VOLUME_MOUNTED_KEY}'"
+
+    docker run --rm \
+        -v "$(pwd):/dci/${DCI_CLOUD}/" \
+        -v "${DCI_SSH_KEY}:/dci/${DCI_CLOUD}/${VOLUME_MOUNTED_KEY}" \
+        "${DCI_REPOSITORY}/certified-infrastructure:${DCI_REFERENCE}" \
+        sh -c "terraform init ${TERRAFORM_OPTIONS}; \
+               terraform apply -auto-approve ${TERRAFORM_OPTIONS}"
+
+    docker run --rm \
+        -v "$(pwd):/dci/${DCI_CLOUD}/" \
+        -v "${DCI_SSH_KEY}:/dci/${DCI_CLOUD}/${VOLUME_MOUNTED_KEY}" \
+        "${DCI_REPOSITORY}/certified-infrastructure:${DCI_REFERENCE}" \
+        ansible-playbook install.yml
+}
 
 if [ ! -f ".SETUP_COMPLETED" ]; then
 
@@ -256,11 +281,8 @@ echo "cloudstor_plugin_version=\"1.0\"" >> terraform.tfvars
     #    sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
     #fi
 
-    # execute DCI script
-    export DCI_SSH_KEY="$HOME/.ssh/id_rsa"
-    export DCI_CLOUD="azure"
     echo "Executing dci script"
-    $DCIHOME/dci.sh create
+    dci_create
 
 else
     echo "updated terraform.tfvars and inventory/2.config files."
