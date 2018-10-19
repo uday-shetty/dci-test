@@ -1,13 +1,13 @@
 #!/bin/sh
 
 # set DCI parameters (Required)
-DCI_SSH_KEY="$HOME/.ssh/id_rsa"
-DCI_CLOUD="azure"
+#DCI_SSH_KEY="$HOME/.ssh/id_rsa"
+#DCI_CLOUD="azure"
 
 # set DCI parameters (Optional)
-DCI_VERSION=${DCI_VERSION:-2.0.0-tp1}
-DCI_REPOSITORY=${DCI_REPOSITORY-"docker"}
-DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
+#DCI_VERSION=${DCI_VERSION:-2.0.0-tp1}
+#DCI_REPOSITORY=${DCI_REPOSITORY-"docker"}
+#DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
 
 #install unzip
 sudo apt-get install -y unzip
@@ -280,6 +280,15 @@ echo "cloudstor_plugin_version=\"1.0\"" >> terraform.tfvars
     #    sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
     #    sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
     #fi
+
+    # set DCI parameters (Required)
+    DCI_SSH_KEY="$HOME/.ssh/id_rsa"
+    DCI_CLOUD="azure"
+
+    # set DCI parameters (Optional)
+    DCI_VERSION=${DCI_VERSION:-2.0.0-tp1}
+    DCI_REPOSITORY=${DCI_REPOSITORY-"docker"}
+    DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
 
     echo "Executing dci script"
     dci_create
