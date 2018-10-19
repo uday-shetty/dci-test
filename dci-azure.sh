@@ -188,11 +188,11 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 # Docker EE Platform variables
 #
 #[all:vars]
-echo "docker_ee_release_channel=stable" >> terraform.tfvars
-echo "docker_ee_version=17.06" >> terraform.tfvars
+echo "docker_ee_release_channel=\"stable\"" >> terraform.tfvars
+echo "docker_ee_version=\"17.06\"" >> terraform.tfvars
 #<placeholder>  Format= sub-xxx-xxx-xxx-xxx
-echo "docker_ee_subscriptions_ubuntu= sub-ccfd5e0b-f831-4f72-bdd1-4ec1df0db808" >> terraform.tfvars
-echo "docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu" >> terraform.tfvars
+echo "docker_ee_subscriptions_ubuntu= \"sub-ccfd5e0b-f831-4f72-bdd1-4ec1df0db808\"" >> terraform.tfvars
+echo "docker_ee_package_version=\"3:17.06.2~ee~16~3-0~ubuntu\"" >> terraform.tfvars
 #
 # docker_ee_subscriptions_centos= <placeholder>
 # docker_ee_package_version= 17.06.2.ee.16-3.el7
@@ -205,8 +205,8 @@ echo "docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu" >> terraform.tfvars
 #
 # docker_ee_subscriptions_sles= <placeholder>
 # docker_ee_package_version= 2:17.06.2.ee.16-3
-echo "docker_ee_package_version_win=17.06.2-ee-16" >> terraform.tfvars
-echo "docker_ucp_version=3.0.4" >> terraform.tfvars
+echo "docker_ee_package_version_win=\"17.06.2-ee-16\"" >> terraform.tfvars
+echo "docker_ucp_version=\"3.0.4\"" >> terraform.tfvars
 # docker_ucp_license_path: "{{ playbook_dir }}/docker_subscription.lic"
 # docker_ucp_cert_file= ssl_cert/ucp_cert.pem
 # docker_ucp_ca_file= ssl_cert/ucp_ca.pem
@@ -214,7 +214,7 @@ echo "docker_ucp_version=3.0.4" >> terraform.tfvars
 # docker_ucp_admin_password=<placeholder>
 # docker_ucp_admin_username=<placeholder>
 # docker_ucp_lb=<placeholder>
-echo "docker_dtr_version=2.5.3" >> terraform.tfvars
+echo "docker_dtr_version=\"2.5.3\"" >> terraform.tfvars
 # docker_dtr_cert_file= ssl_cert/dtr_cert.pem
 # docker_dtr_key_file= ssl_cert/dtr_key.pem
 # docker_dtr_ca_file= ssl_cert/dtr_ca.pem
@@ -230,7 +230,7 @@ echo "docker_dtr_version=2.5.3" >> terraform.tfvars
 # Cloudstor
 #
 # Set to "disabled" to prevent the plugin being installed (even if cloudstor_plugin_options is set).
-echo "cloudstor_plugin_version=1.0" >> terraform.tfvars
+echo "cloudstor_plugin_version=\"1.0\"" >> terraform.tfvars
 
     #if [[ $linuxOS == *"ubuntu"* ]]; then
     #    echo "Ubuntu"
