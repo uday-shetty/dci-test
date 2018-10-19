@@ -191,7 +191,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
 echo "docker_ee_release_channel=stable" >> terraform.tfvars
 echo "docker_ee_version=17.06" >> terraform.tfvars
 #<placeholder>  Format= sub-xxx-xxx-xxx-xxx
-echo "docker_ee_subscriptions_ubuntu= sub-1d0661e3-2ba1-4362-9e5f-42d56ad03eb8" >> terraform.tfvars
+echo "docker_ee_subscriptions_ubuntu= sub-ccfd5e0b-f831-4f72-bdd1-4ec1df0db808" >> terraform.tfvars
 echo "docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu" >> terraform.tfvars
 #
 # docker_ee_subscriptions_centos= <placeholder>
