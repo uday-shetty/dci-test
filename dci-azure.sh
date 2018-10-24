@@ -290,8 +290,8 @@ echo "cloudstor_plugin_version=\"1.0\"" >> terraform.tfvars
     DCI_REPOSITORY=${DCI_REPOSITORY-"docker"}
     DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
 
-    #echo "Executing dci script"
-    #dci_create
+    echo "Executing dci script"
+    dci_create
 
 else
     echo "updated terraform.tfvars and inventory/2.config files."
