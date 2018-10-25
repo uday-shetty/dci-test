@@ -257,37 +257,40 @@ echo "docker_dtr_version=\"2.5.3\"" >> terraform.tfvars
 # Set to "disabled" to prevent the plugin being installed (even if cloudstor_plugin_options is set).
 echo "cloudstor_plugin_version=\"1.0\"" >> terraform.tfvars
 
-    #if [[ $linuxOS == *"ubuntu"* ]]; then
-    #    echo "Ubuntu"
+    if [[ $linuxOS == *"ubuntu"* ]]; then
+        echo "Ubuntu"
     #    sed -i -e '/ docker_ee_subscriptions_ubuntu/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_ubuntu/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
     #    sed -i -e '/ docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu/s/^# //' $docker_ee_dir
          echo "docker_ee_subscriptions_ubuntu= \"'$dockerEESub'\"" >> terraform.tfvars
          echo "docker_ee_package_version=\"3:17.06.2~ee~16~3-0~ubuntu\"" >> terraform.tfvars
-    #elif [[ $linuxOS == *"rhel"* ]]; then
-    #    echo "RHEL"
+    elif [[ $linuxOS == *"rhel"* ]]; then
+        echo "RHEL"
     #    sed -i -e '/ docker_ee_subscriptions_redhat/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_redhat/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
     #    sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
-         echo "docker_ee_subscriptions_ubuntu= \"'$dockerEESub'\"" >> terraform.tfvars
+         echo "docker_ee_subscriptions_redhat= \"'$dockerEESub'\"" >> terraform.tfvars
          echo "docker_ee_package_version= \"17.06.2.ee.16-3.el7\"" >> terraform.tfvars
-    #elif [[ $linuxOS == *"centos"* ]]; then
+    elif [[ $linuxOS == *"centos"* ]]; then
+        echo "CentOS"
     #    sed -i -e '/ docker_ee_subscriptions_centos/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_centos/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
     #    sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
-         echo "docker_ee_subscriptions_ubuntu= \"'$dockerEESub'\"" >> terraform.tfvars
+         echo "docker_ee_subscriptions_centos= \"'$dockerEESub'\"" >> terraform.tfvars
          echo "docker_ee_package_version= \"17.06.2.ee.16-3.el7\"" >> terraform.tfvars
-    #elif [[ $linuxOS == *"oraclelinux"* ]]; then
+    elif [[ $linuxOS == *"oraclelinux"* ]]; then
+         echo "Oracle Linux"
     #    sed -i -e '/ docker_ee_subscriptions_oracle/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_oracle/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
     #    sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
-         echo "docker_ee_subscriptions_ubuntu= \"'$dockerEESub'\"" >> terraform.tfvars
+         echo "docker_ee_subscriptions_oracle= \"'$dockerEESub'\"" >> terraform.tfvars
          echo "docker_ee_package_version= \"17.06.2.ee.16-3.el7\"" >> terraform.tfvars
-    #elif [[ $linuxOS == *"sles"* ]]; then
+    elif [[ $linuxOS == *"sles"* ]]; then
+         echo "Suse Linux"
     #    sed -i -e '/ docker_ee_subscriptions_sles/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
     #    sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
-         echo "docker_ee_subscriptions_ubuntu= \"'$dockerEESub'\"" >> terraform.tfvars
+         echo "docker_ee_subscriptions_sles= \"'$dockerEESub'\"" >> terraform.tfvars
          echo "docker_ee_package_version= \"2:17.06.2.ee.16-3\"" >> terraform.tfvars
     #fi
 
