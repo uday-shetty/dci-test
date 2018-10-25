@@ -1,14 +1,5 @@
 #!/bin/sh
 
-# set DCI parameters (Required)
-#DCI_SSH_KEY="$HOME/.ssh/id_rsa"
-#DCI_CLOUD="azure"
-
-# set DCI parameters (Optional)
-#DCI_VERSION=${DCI_VERSION:-2.0.0-tp1}
-#DCI_REPOSITORY=${DCI_REPOSITORY-"docker"}
-#DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
-
 #install unzip
 sudo apt-get install -y unzip
 sudo apt-get install -y jq
@@ -188,8 +179,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     # set Windows Credendials
     if [[ $winwrkCount -gt 0 ]]; then
 	echo "Setup credentials for Windows worker nodes"
-    	sed -i -e '/windows_user/s/^# //' terraform.tfvars
-    	sed -i -e '/windows_admin_password/s/^# //' terraform.tfvars
+    	sed -i -e '/windows_user/s/^#//' terraform.tfvars
+    	sed -i -e '/windows_admin_password/s/^#//' terraform.tfvars
     	sed -i -e '/windows_admin_password /s/ = "[^"]*"/= "'$windows_admin_password'"/' terraform.tfvars
     fi
 
