@@ -292,7 +292,7 @@ echo "cloudstor_plugin_version=\"1.0\"" >> terraform.tfvars
     #    sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
          echo "docker_ee_subscriptions_sles= \"'$dockerEESub'\"" >> terraform.tfvars
          echo "docker_ee_package_version= \"2:17.06.2.ee.16-3\"" >> terraform.tfvars
-    #fi
+    fi
 
     # set DCI parameters (Required)
     DCI_SSH_KEY="$HOME/.ssh/id_rsa"
