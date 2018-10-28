@@ -89,10 +89,10 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     echo "Linux Worker VM Size: $linuxwrkVMSize"
 
     dtrCount=${16}
-    echo "Linux Worker Count: $dtrCount"
+    echo "DTR Count: $dtrCount"
 
     dtrVMSize=${17}
-    echo "Linux Worker VM Size: $dtrVMSize"
+    echo "DTR VM Size: $dtrVMSize"
 
     winwrkCount=${18}
     echo "Windows Worker Count: $winwrkCount"
@@ -187,16 +187,16 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     	sed -i -e '/windows_admin_password /s/ = "[^"]*"/= "'$windows_admin_password'"/' terraform.tfvars
         if [[ $windowsOS == *"2016"* ]]; then
           echo "Windows 2016"
-          sed -i -e  '/offer /s/ = "WindowsServer"/= "WindowsServer"/' sample.tfvars
-          sed -i -e  '/sku /s/ = "2016-DataCenter"/= "2016-DataCenter"/' sample.tfvars
+          sed -i -e  '/offer /s/ = "WindowsServer"/= "WindowsServer"/' terraform.tfvars
+          sed -i -e  '/sku /s/ = "2016-DataCenter"/= "2016-DataCenter"/' terraform.tfvars
         elif [[ $windowsOS == *"1709"* ]]; then
           echo "Windows 1709"
-          sed -i -e  '/offer /s/ = "WindowsServer"/= "WindowsServerSemiAnnual"/' sample.tfvars
-          sed -i -e  '/sku /s/ = "2016-DataCenter"/= "Datacenter-Core-1709-smalldisk"/' sample.tfvars
+          sed -i -e  '/offer /s/ = "WindowsServer"/= "WindowsServerSemiAnnual"/' terraform.tfvars
+          sed -i -e  '/sku /s/ = "2016-DataCenter"/= "Datacenter-Core-1709-smalldisk"/' terraform.tfvars
         elif [[ $windowsOS == *"1803"* ]]; then
           echo "Windows 1803"
-          sed -i -e  '/offer /s/ = "WindowsServer"/= "WindowsServerSemiAnnual"/' sample.tfvars
-          sed -i -e  '/sku /s/ = "2016-DataCenter"/= "Datacenter-Core-1803-with-Containers-smalldisk"/' sample.tfvars
+          sed -i -e  '/offer /s/ = "WindowsServer"/= "WindowsServerSemiAnnual"/' terraform.tfvars
+          sed -i -e  '/sku /s/ = "2016-DataCenter"/= "Datacenter-Core-1803-with-Containers-smalldisk"/' terraform.tfvars
         fi
     fi
 
