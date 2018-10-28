@@ -126,6 +126,9 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     sshPrivKey=${29}
     echo "Key: $sshPrivKey"
 
+    windowsOS=${30}
+    echo "WindowsVersion= $windowsOS"
+
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
 
@@ -182,6 +185,19 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     	sed -i -e '/windows_user/s/^#//' terraform.tfvars
     	sed -i -e '/windows_admin_password/s/^#//' terraform.tfvars
     	sed -i -e '/windows_admin_password /s/ = "[^"]*"/= "'$windows_admin_password'"/' terraform.tfvars
+        if [[ $windowsOS == *"2016"* ]]; then
+          echo "Windows 2016"
+          sed -i -e  '/offer /s/ = "WindowsServer"/= "WindowsServer"/' sample.tfvars
+          sed -i -e  '/sku /s/ = "2016-DataCenter"/= "2016-DataCenter"/' sample.tfvars
+        elif [[ $windowsOS == *"1709"* ]]; then
+          echo "Windows 1709"
+          sed -i -e  '/offer /s/ = "WindowsServer"/= "WindowsServerSemiAnnual"/' sample.tfvars
+          sed -i -e  '/sku /s/ = "2016-DataCenter"/= "Datacenter-Core-1709-smalldisk"/' sample.tfvars
+        elif [[ $windowsOS == *"1803"* ]]; then
+          echo "Windows 1803"
+          sed -i -e  '/offer /s/ = "WindowsServer"/= "WindowsServerSemiAnnual"/' sample.tfvars
+          sed -i -e  '/sku /s/ = "2016-DataCenter"/= "Datacenter-Core-1803-with-Containers-smalldisk"/' sample.tfvars
+        fi
     fi
 
     # decode SSH private key and store in /home/docker/.ssh
@@ -295,7 +311,7 @@ echo "cloudstor_plugin_version=\"1.0\"" >> terraform.tfvars
     DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
 
     echo "Executing dci script"
-    dci_create
+    #dci_create
 
 else
     echo "updated terraform.tfvars and inventory/2.config files."
