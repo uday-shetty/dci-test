@@ -64,70 +64,64 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dciDockerEESub=$7
     echo "DockerEESubscription: $dciDockerEESub"
 
-    sshPublicKey=$8
-    echo "SSH Public Key: $sshPublicKey"
- 
-    ucpversion=$9
+    ucpversion=$8
     echo "DCI UCP Version: $ucpversion"
 
-    dtrversion=${10}
+    dtrversion=${9}
     echo "DCI DTR Version: $dtrversion"
 
-    dockerlicense=${11}
+    dockerlicense=${10}
     echo "License: $dockerlicense"
 
-    managerCount=${12}
+    managerCount=${11}
     echo "Manager Count: $managerCount"
 
-    managerVMSize=${13}
+    managerVMSize=${12}
     echo "Manager VM Size: $managerVMSize"
 
-    linuxwrkCount=${14}
+    linuxwrkCount=${13}
     echo "Linux Worker Count: $linuxwrkCount"
 
-    linuxwrkVMSize=${15}
+    linuxwrkVMSize=${14}
     echo "Linux Worker VM Size: $linuxwrkVMSize"
 
-    dtrCount=${16}
+    dtrCount=${15}
     echo "DTR Count: $dtrCount"
 
-    dtrVMSize=${17}
+    dtrVMSize=${16}
     echo "DTR VM Size: $dtrVMSize"
 
-    winwrkCount=${18}
+    winwrkCount=${17}
     echo "Windows Worker Count: $winwrkCount"
 
-    winwrkVMSize=${19}
+    winwrkVMSize=${18}
     echo "Windows Worker VM Size: $winwrkVMSize"
 
-    linuxOS=${20}
+    linuxOS=${19}
     echo "linuxOS: $linuxOS"
 
-    linuxuser=${21}
+    linuxuser=${20}
 
-    dciVersion=${22}
+    dciVersion=${21}
     echo "DCI Version= $dciVersion"
 
-    dcideploymentName=${23}
+    dcideploymentName=${22}
     echo "Deployment Name= $dcideploymentName"
     
-    ucpadminusername=${24}
-    echo "Docker EE Username = $ucpadminusername"
+    windowsOS=${23}
+    echo "WindowsVersion= $windowsOS"
 
-    ucpadminpasswd=${25}
+    ucpadminpasswd=${24}
     echo "Docker EE passwd = $ucpadminpasswd"
 
-    hubUsername=${26}
-    hubPassword=${27}
+    hubUsername=${25}
+    hubPassword=${26}
 
-    windows_admin_password=${28}
+    windows_admin_password=${27}
     echo "Windows Admin Password= $windows_admin_password"
     
-    sshPrivKey=${29}
+    sshPrivKey=${28}
     echo "Key: $sshPrivKey"
-
-    windowsOS=${30}
-    echo "WindowsVersion= $windowsOS"
 
     echo "Great you're all set"
     echo "Remove .SETUP_COMPLETED if you want to re-run setup"
@@ -183,6 +177,8 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     if [[ $winwrkCount -gt 0 ]]; then
 	echo "Setup credentials for Windows worker nodes"
     	sed -i -e '/windows_user/s/^#//' terraform.tfvars
+    	sed -i -e '/windows_user/s/^#//' terraform.tfvars
+    	sed -i -e '/windows_user /s/ = "[^"]*"/= "'$linuxuser'"/' terraform.tfvars
     	sed -i -e '/windows_admin_password/s/^#//' terraform.tfvars
     	sed -i -e '/windows_admin_password /s/ = "[^"]*"/= "'$windows_admin_password'"/' terraform.tfvars
         if [[ $windowsOS == *"2016"* ]]; then
