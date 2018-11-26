@@ -21,6 +21,7 @@ sudo apt-get install -y docker-ce
 
 service docker restart
 
+# provision and install EE
 dci_create() {
     VOLUME_MOUNTED_KEY="$(basename "${DCI_SSH_KEY}")"
     TERRAFORM_OPTIONS="-var 'ssh_private_key_path=${VOLUME_MOUNTED_KEY}'"
@@ -302,12 +303,12 @@ echo "cloudstor_plugin_version=\"1.0\"" >> terraform.tfvars
     DCI_CLOUD="azure"
 
     # set DCI parameters (Optional)
-    DCI_VERSION=${DCI_VERSION:-2.0.0-tp1}
+    DCI_VERSION=${DCI_VERSION:-2.0.0-beta}
     DCI_REPOSITORY=${DCI_REPOSITORY-"docker"}
     DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
 
     echo "Executing dci script"
-    dci_create
+    #dci_create
 
 else
     echo "updated terraform.tfvars and inventory/2.config files."
