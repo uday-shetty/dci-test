@@ -259,7 +259,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
 
     echo "Executing dci script"
-    #dci_create
+    dci_create
 
 else
     echo "updated terraform.tfvars and inventory/2.config files."
