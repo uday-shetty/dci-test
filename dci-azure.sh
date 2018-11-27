@@ -244,9 +244,11 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     DCI_CLOUD="azure"
 
     # set DCI parameters (Optional)
-    DCI_VERSION=${DCI_VERSION:-2.0.0-beta}
+    #DCI_VERSION=${DCI_VERSION:-2.0.0-beta}
+    DCI_VERSION=${DCI_VERSION:-${dciVersion}}
     DCI_REPOSITORY=${DCI_REPOSITORY-"docker"}
     DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
+    echo "DCI_REFERENCE=$DCI_REFERENCE"
 
     echo "Executing dci script"
     #dci_create
