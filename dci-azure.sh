@@ -146,9 +146,12 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     cd $DCIHOME
 
     # edit terraform.tfvars
+
+    # update ucp/dtr versions, deployment name and ucp passwd
     sed -i -e '/deployment /s/ = "[^"]*"/= "'$dcideploymentName'"/' terraform.tfvars
     sed -i -e '/docker_ucp_version /s/ = "[^"]*"/= "'$ucpversion'"/' terraform.tfvars
     sed -i -e '/docker_dtr_version /s/ = "[^"]*"/= "'$dtrversion'"/' terraform.tfvars
+    sed -i -e '/ docker_ucp_admin_password/s/^# //' terraform.tfvars
     sed -i -e '/docker_ucp_admin_password /s/ = "[^"]*"/= "'$ucpadminpasswd'"/' terraform.tfvars
     sed -i -e '/region /s/ = "[^"]*"/= "'$dciAzureRegion'"/' terraform.tfvars
 
@@ -207,45 +210,32 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     dockerEESub="$(echo $dciDockerEESub | sed -e 's#.*/##')"
     echo $dockerEESub
 
-    # edit Docker EE subscriptions
-    
-# Cloudstor
-#
-# Set to "disabled" to prevent the plugin being installed (even if cloudstor_plugin_options is set).
-#    echo "cloudstor_plugin_version=\"1.0\"" >> terraform.tfvars
-
-# Docker EE Platform variables
-
+    # update OS specific Docker EE subscriptions info
 
     if [[ $linuxOS == *"ubuntu"* ]]; then
         echo "Ubuntu"
     #    sed -i -e '/ docker_ee_subscriptions_ubuntu/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_ubuntu/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-    #    sed -i -e '/ docker_ee_package_version=3:17.06.2~ee~16~3-0~ubuntu/s/^# //' $docker_ee_dir
          echo "docker_ee_subscriptions_ubuntu= \"$dockerEESub\"" >> terraform.tfvars
     elif [[ $linuxOS == *"rhel"* ]]; then
         echo "RHEL"
     #    sed -i -e '/ docker_ee_subscriptions_redhat/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_redhat/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-    #    sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
          echo "docker_ee_subscriptions_redhat= \"$dockerEESub\"" >> terraform.tfvars
     elif [[ $linuxOS == *"centos"* ]]; then
         echo "CentOS"
     #    sed -i -e '/ docker_ee_subscriptions_centos/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_centos/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-    #    sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
          echo "docker_ee_subscriptions_centos= \"$dockerEESub\"" >> terraform.tfvars
     elif [[ $linuxOS == *"oraclelinux"* ]]; then
          echo "Oracle Linux"
     #    sed -i -e '/ docker_ee_subscriptions_oracle/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_oracle/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-    #    sed -i -e '/ docker_ee_package_version= 17.06.2.ee.16-3.el7/s/^# //' $docker_ee_dir
          echo "docker_ee_subscriptions_oracle= \"$dockerEESub\"" >> terraform.tfvars
     elif [[ $linuxOS == *"sles"* ]]; then
          echo "Suse Linux"
     #    sed -i -e '/ docker_ee_subscriptions_sles/s/^# //' $docker_ee_dir
     #    sed -i -e '/docker_ee_subscriptions_sles/s/= [^"]*/= '$dockerEESub'/' $docker_ee_dir
-    #    sed -i -e '/ docker_ee_package_version= 2:17.06.2.ee.16-3/s/^# //' $docker_ee_dir
          echo "docker_ee_subscriptions_sles= \"$dockerEESub\"" >> terraform.tfvars
     fi
 
@@ -259,7 +249,7 @@ if [ ! -f ".SETUP_COMPLETED" ]; then
     DCI_REFERENCE=${DCI_REFERENCE:-"${DCI_CLOUD}-${DCI_VERSION}"}
 
     echo "Executing dci script"
-    dci_create
+    #dci_create
 
 else
     echo "updated terraform.tfvars and inventory/2.config files."
